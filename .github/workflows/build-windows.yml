@@ -1,0 +1,64 @@
+name: Build Mulacoin Windows
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar dependências
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential libtool autotools-dev automake pkg-config \
+            g++-mingw-w64-x86-64 mingw-w64 nsis zip curl \
+            python3 bison
+
+      - name: Cache dependências Windows
+        uses: actions/cache@v3
+        id: cache-depends
+        with:
+          path: depends/x86_64-w64-mingw32
+          key: windows-depends-${{ hashFiles('depends/packages/*.mk') }}
+
+      - name: Compilar dependências para Windows
+        if: steps.cache-depends.outputs.cache-hit != 'true'
+        run: |
+          cd depends
+          make HOST=x86_64-w64-mingw32 -j2
+
+      - name: Configurar build
+        run: |
+          ./autogen.sh
+          CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site \
+            ./configure --prefix=/ --disable-tests --disable-bench --disable-zmq
+
+      - name: Compilar Mulacoin
+        run: make -j2
+
+      - name: Preparar executáveis
+        run: |
+          mkdir -p release-windows
+          cp src/qt/dogecoin-qt.exe    release-windows/mulacoin-qt.exe
+          cp src/dogecoind.exe         release-windows/mulacoind.exe
+          cp src/dogecoin-cli.exe      release-windows/mulacoin-cli.exe
+          cp src/dogecoin-tx.exe       release-windows/mulacoin-tx.exe
+          for dll in libwinpthread-1.dll libstdc++-6.dll libgcc_s_seh-1.dll; do
+            found=$(find /usr/lib/gcc/x86_64-w64-mingw32 /usr/x86_64-w64-mingw32 \
+                         -name "$dll" 2>/dev/null | head -1)
+            [ -n "$found" ] && cp "$found" release-windows/
+          done
+          ls -lh release-windows/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mulacoin-windows-x64
+          path: release-windows/
+          retention-days: 30
