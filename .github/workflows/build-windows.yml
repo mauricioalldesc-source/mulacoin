@@ -1,4 +1,5 @@
 name: Build Mulacoin Windows
+
 on:
   push:
     branches: [ master, main ]
@@ -10,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Instalar dependências
         run: |
@@ -19,6 +20,27 @@ jobs:
             build-essential libtool autotools-dev automake pkg-config \
             g++-mingw-w64-x86-64 mingw-w64 nsis zip curl \
             python3 bison
+
+      - name: Corrigir mirrors e baixar OpenSSL manualmente
+        run: |
+          mkdir -p depends/sources
+          # Desabilitar SSL check e remover mirror quebrado
+          sed -i 's/curl -L/curl -L --insecure/g' depends/funcs.mk
+          sed -i 's|https://depends.dogecoincore.org||g' depends/funcs.mk
+          # Trocar URL do OpenSSL pelo Wayback Machine
+          sed -i 's|$(package)_download_path=https://www.openssl.org/source/old/$($(package)_version)|$(package)_download_path=https://web.archive.org/web/20210101120000/https://www.openssl.org/source/old/$($(package)_version)|' depends/packages/openssl.mk
+          # Baixar OpenSSL direto e criar stamp
+          wget -q --no-check-certificate \
+            "https://web.archive.org/web/20210101120000/https://www.openssl.org/source/old/1.0.2/openssl-1.0.2u.tar.gz" \
+            -O depends/sources/openssl-1.0.2u.tar.gz
+          HASH=$(sha256sum depends/sources/openssl-1.0.2u.tar.gz | cut -d' ' -f1)
+          echo "Hash do OpenSSL: $HASH"
+          # Atualizar o hash no openssl.mk
+          sed -i "s/openssl_sha256_hash=.*/openssl_sha256_hash=$HASH/" depends/packages/openssl.mk
+          # Criar stamp pra não tentar baixar de novo
+          mkdir -p depends/sources/download-stamps
+          echo "$HASH  depends/sources/openssl-1.0.2u.tar.gz" > \
+            depends/sources/download-stamps/.stamp_fetched-openssl-openssl-1.0.2u.tar.gz.hash
 
       - name: Cache dependências Windows
         uses: actions/cache@v4
