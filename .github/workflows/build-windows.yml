@@ -21,7 +21,7 @@ jobs:
             python3 bison
 
       - name: Cache dependências Windows
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
@@ -57,7 +57,7 @@ jobs:
           ls -lh release-windows/
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mulacoin-windows-x64
           path: release-windows/
