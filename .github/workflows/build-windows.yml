@@ -38,7 +38,7 @@ jobs:
           # qrencode
           wget -q "http://archive.ubuntu.com/ubuntu/pool/universe/q/qrencode/qrencode_3.4.4.orig.tar.bz2" -O depends/sources/qrencode-3.4.4.tar.bz2
           HASH_QR=$(sha256sum depends/sources/qrencode-3.4.4.tar.bz2 | cut -d' ' -f1)
-          sed -i "s/qrencode_sha256_hash=.*/qrencode_sha256_hash=${HASH_QR}/" depends/packages/qrencode.mk
+          sed -i "s/$(package)_sha256_hash=efe5188b1ddbcbf98763b819b146be6a90481aac30cfc8d858ab78a19cde1fa5/$(package)_sha256_hash=${HASH_QR}/" depends/packages/qrencode.mk
           echo "${HASH_QR}  depends/sources/qrencode-3.4.4.tar.bz2" > depends/sources/download-stamps/.stamp_fetched-qrencode-qrencode-3.4.4.tar.bz2.hash
           echo "qrencode hash: ${HASH_QR}"
 
@@ -47,7 +47,7 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v6-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v7-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependências para Windows
         if: steps.cache-depends.outputs.cache-hit != 'true'
