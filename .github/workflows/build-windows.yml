@@ -40,13 +40,17 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v3-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v4-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependências para Windows (sem ZeroMQ)
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
           cd depends
-          make HOST=x86_64-w64-mingw32 -j2 NO_ZMQ=1
+          # Remover ZeroMQ incompatível
+          sed -i "s| zeromq||g" packages/packages.mk 2>/dev/null || true
+          sed -i "s|zeromq ||g" packages/packages.mk 2>/dev/null || true
+          cat packages/packages.mk | grep -i zmq || echo "ZeroMQ removido!"
+          make HOST=x86_64-w64-mingw32 -j2
 
       - name: Configurar build
         run: |
