@@ -47,7 +47,7 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v7-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v8-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependências para Windows
         if: steps.cache-depends.outputs.cache-hit != 'true'
