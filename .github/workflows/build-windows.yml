@@ -40,7 +40,7 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v2-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v3-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependências para Windows (sem ZeroMQ)
         if: steps.cache-depends.outputs.cache-hit != 'true'
