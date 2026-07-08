@@ -77,9 +77,7 @@ bool fCheckBlockIndex = false;
 bool fCheckpointsEnabled = DEFAULT_CHECKPOINTS_ENABLED;
 size_t nCoinCacheUsage = 5000 * 300;
 uint64_t nPruneTarget = 0;
-// Mulacoin: rede nova, desabilitamos a verificação de idade do bloco por padrão
-// O nó não entra em IBD por causa do timestamp do gênese ser "velho"
-int64_t nMaxTipAge = 0;
+int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 bool fEnableReplacement = DEFAULT_ENABLE_REPLACEMENT;
 
 uint256 hashAssumeValid;
@@ -1238,8 +1236,9 @@ bool IsInitialBlockDownload()
         return true;
     if (chainActive.Tip()->nChainWork < UintToArith256(chainParams.GetConsensus(chainActive.Height()).nMinimumChainWork))
         return true;
-    if (chainActive.Tip()->GetBlockTime() < (GetTime() - nMaxTipAge))
-        return true;
+    // Mulacoin: removida verificação de timestamp (gênese tem data fixa e seria sempre "velho")
+    // if (chainActive.Tip()->GetBlockTime() < (GetTime() - nMaxTipAge))
+    //     return true;
     latchToFalse.store(true, std::memory_order_relaxed);
     return false;
 }
