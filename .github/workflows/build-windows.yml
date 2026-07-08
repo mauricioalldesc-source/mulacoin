@@ -73,6 +73,13 @@ jobs:
           echo "${HASH_ZL}  depends/sources/zlib-1.3.tar.gz" > depends/sources/download-stamps/.stamp_fetched-zlib-zlib-1.3.tar.gz.hash
 
           # Berkeley DB 5.3.28
+          wget -q "https://github.com/berkeleydb/libdb/releases/download/v5.3.28/db-5.3.28.tar.gz"             -O depends/sources/db-5.3.28.NC.tar.gz ||           wget -q --no-check-certificate "http://download.oracle.com/berkeley-db/db-5.3.28.NC.tar.gz"             -O depends/sources/db-5.3.28.NC.tar.gz
+          HASH_BDB=$(sha256sum depends/sources/db-5.3.28.NC.tar.gz | cut -d' ' -f1)
+          echo "BDB hash: $HASH_BDB"
+          sed -i "s/76a25560d9e52a198d37a31440fd07632b5f1f8f9f2b6d5438f4bc3e7c9013ef/${HASH_BDB}/" depends/packages/bdb.mk
+          echo "${HASH_BDB}  depends/sources/db-5.3.28.NC.tar.gz" > depends/sources/download-stamps/.stamp_fetched-bdb-db-5.3.28.NC.tar.gz.hash
+          echo "BDB OK!"
+          # Berkeley DB 5.3.28
           wget -q "https://github.com/berkeleydb/libdb/archive/refs/tags/v5.3.28.tar.gz" \
             -O depends/sources/db-5.3.28.NC.tar.gz
           HASH_BDB=$(sha256sum depends/sources/db-5.3.28.NC.tar.gz | cut -d' ' -f1)
@@ -104,7 +111,7 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v12-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v13-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependencias para Windows
         if: steps.cache-depends.outputs.cache-hit != 'true'
