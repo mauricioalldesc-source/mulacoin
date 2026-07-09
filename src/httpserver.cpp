@@ -67,15 +67,17 @@ template <typename WorkItem>
 class WorkQueue
 {
 private:
-    /** Mutex protects entire object */
-    std::mutex cs;
-    std::condition_variable cond;
     std::deque<std::unique_ptr<WorkItem>> queue;
     bool running;
     size_t maxDepth;
     int numThreads;
 
-    friend class ThreadCounter;
+public:
+    /** Mutex protects entire object */
+    std::mutex cs;
+    std::condition_variable cond;
+
+private:
 
     /** RAII object to keep track of number of running worker threads */
     class ThreadCounter
