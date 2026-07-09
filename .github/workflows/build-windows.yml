@@ -38,7 +38,6 @@ jobs:
           ls -la depends/sources/db-5.3.28.NC.tar.gz || echo "ARQUIVO NAO EXISTE"
           wget -v "https://github.com/berkeleydb/libdb/archive/refs/tags/v5.3.28.tar.gz" -O depends/sources/db-5.3.28.NC.tar.gz || echo "ERRO wget BDB archive" 
           HASH=$(sha256sum depends/sources/db-5.3.28.NC.tar.gz | cut -d' ' -f1)
-          sed -i "s/76a25560d9e52a198d37a31440fd07632b5f1f8f9f2b6d5438f4bc3e7c9013ef/${HASH}/" depends/packages/bdb.mk
           echo "${HASH}  depends/sources/db-5.3.28.NC.tar.gz" > depends/sources/download-stamps/.stamp_fetched-bdb-db-5.3.28.NC.tar.gz.hash
           echo "BDB: ${HASH}"
 
@@ -58,7 +57,7 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v15-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v16-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependencias para Windows
         if: steps.cache-depends.outputs.cache-hit != 'true'
