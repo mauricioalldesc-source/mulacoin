@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config \
-            g++-mingw-w64-x86-64 mingw-w64 nsis zip curl python3 bison
+            g++-mingw-w64-x86-64 mingw-w64 nsis zip curl python3 bison autoconf-archive
 
       - name: Pre-baixar pacotes e corrigir mirrors
         run: |
@@ -57,7 +57,7 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v17-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v18-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependencias para Windows
         if: steps.cache-depends.outputs.cache-hit != 'true'
