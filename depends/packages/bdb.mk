@@ -1,7 +1,7 @@
 package=bdb
 $(package)_version=5.3.28
-$(package)_download_path=http://download.oracle.com/berkeley-db
-$(package)_file_name=db-$($(package)_version).NC.tar.gz
+$(package)_download_path=https://github.com/berkeleydb/libdb/releases/download/v$($(package)_version)
+$(package)_file_name=db-$($(package)_version).tar.gz
 $(package)_sha256_hash=e0a992d740709892e81f9d93f06daf305cf73fb81b545afe72478043172c3628
 $(package)_build_subdir=build_unix
 
