@@ -75,6 +75,8 @@ private:
     size_t maxDepth;
     int numThreads;
 
+    friend class ThreadCounter;
+
     /** RAII object to keep track of number of running worker threads */
     class ThreadCounter
     {
