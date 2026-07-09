@@ -83,17 +83,20 @@ private:
     class ThreadCounter
     {
     public:
-        WorkQueue &wq;
-        ThreadCounter(WorkQueue &w): wq(w)
+        std::mutex& cs;
+        std::condition_variable& cond;
+        int& numThreads;
+        ThreadCounter(std::mutex& _cs, std::condition_variable& _cond, int& _numThreads)
+            : cs(_cs), cond(_cond), numThreads(_numThreads)
         {
-            std::lock_guard<std::mutex> lock(wq.cs);
-            wq.numThreads += 1;
+            std::lock_guard<std::mutex> lock(cs);
+            numThreads += 1;
         }
         ~ThreadCounter()
         {
-            std::lock_guard<std::mutex> lock(wq.cs);
-            wq.numThreads -= 1;
-            wq.cond.notify_all();
+            std::lock_guard<std::mutex> lock(cs);
+            numThreads -= 1;
+            cond.notify_all();
         }
     };
 
@@ -123,7 +126,7 @@ public:
     /** Thread function */
     void Run()
     {
-        ThreadCounter count(*this);
+        ThreadCounter count(cs, cond, numThreads);
         while (true) {
             std::unique_ptr<WorkItem> i;
             {
