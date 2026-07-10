@@ -22,6 +22,8 @@
 #include <signal.h>
 #include <deque>
 #include <future>
+#include <thread>
+#include <mutex>
 
 #include <event2/event.h>
 #include <event2/http.h>
