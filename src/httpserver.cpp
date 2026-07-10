@@ -10,9 +10,6 @@
 #include "util.h"
 #include "netbase.h"
 #include "rpc/protocol.h" // For HTTP status codes
-#include "sync.h"
-#include "ui_interface.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +21,10 @@
 #include <future>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
+
+#include "sync.h"
+#include "ui_interface.h"
 
 #include <event2/event.h>
 #include <event2/http.h>
