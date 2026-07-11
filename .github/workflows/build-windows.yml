@@ -69,7 +69,7 @@ jobs:
         run: |
           ./autogen.sh
           CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site \
-            ./configure --prefix=/ --disable-tests --disable-bench --disable-zmq LDFLAGS="-lpthread"
+            ./configure --prefix=/ --disable-tests --disable-bench --disable-zmq CXXFLAGS="-std=c++11" LDFLAGS="-lpthread"
 
       - name: Compilar Mulacoin
         run: make -j2
