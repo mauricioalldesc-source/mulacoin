@@ -28,6 +28,7 @@
 #define FD_SETSIZE 1024 // max number of fds in fd_set
 
 #include <winsock2.h>     // Must be included before mswsock.h and windows.h
+#include <winnt.h>        // Must be included before processthreadsapi.h
 
 #include <mswsock.h>
 #include <windows.h>
