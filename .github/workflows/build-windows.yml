@@ -18,6 +18,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config \
             g++-mingw-w64-x86-64 mingw-w64 nsis zip curl python3 bison autoconf-archive
+          # Trocar para modelo POSIX de threads (habilita std::thread, std::mutex)
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
 
       - name: Pre-baixar pacotes e corrigir mirrors
         run: |
@@ -57,7 +60,7 @@ jobs:
         id: cache-depends
         with:
           path: depends/x86_64-w64-mingw32
-          key: windows-depends-v19-${{ hashFiles('depends/packages/*.mk') }}
+          key: windows-depends-v20-${{ hashFiles('depends/packages/*.mk') }}
 
       - name: Compilar dependencias para Windows
         if: steps.cache-depends.outputs.cache-hit != 'true'
