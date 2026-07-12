@@ -70,22 +70,17 @@ jobs:
 
       - name: Corrigir PROCESSOR_NUMBER no MinGW winbase.h
         run: |
-          cat > /tmp/fix_mingw.py << 'SCRIPTEOF'
-path = "/usr/share/mingw-w64/include/winbase.h"
-fix = "#ifndef _PROCESSOR_NUMBER_DEFINED\n#define _PROCESSOR_NUMBER_DEFINED\ntypedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n#endif\n"
-with open(path) as f:
-    content = f.read()
-if "GetNumaProcessorNodeEx" in content and "_PROCESSOR_NUMBER_DEFINED" not in content:
-    idx = content.index("GetNumaProcessorNodeEx")
-    nl = content.rfind("\n", 0, idx) + 1
-    content = content[:nl] + fix + content[nl:]
-    with open(path, "w") as f:
-        f.write(content)
-    print("Fix aplicado!")
+          sudo python3 -c "
+path='/usr/share/mingw-w64/include/winbase.h'
+fix='#ifndef _PROCESSOR_NUMBER_DEFINED\n#define _PROCESSOR_NUMBER_DEFINED\ntypedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n#endif\n'
+f=open(path); c=f.read(); f.close()
+if 'GetNumaProcessorNodeEx' in c and '_PROCESSOR_NUMBER_DEFINED' not in c:
+    i=c.index('GetNumaProcessorNodeEx'); nl=c.rfind(chr(10),0,i)+1
+    c=c[:nl]+fix+c[nl:]; f=open(path,'w'); f.write(c); f.close()
+    print('Fix aplicado!')
 else:
-    print("Ja corrigido ou nao encontrado")
-SCRIPTEOF
-          sudo python3 /tmp/fix_mingw.py
+    print('Ja ok')
+"
 
       - name: Configurar build
         run: |
