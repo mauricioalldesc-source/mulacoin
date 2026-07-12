@@ -68,6 +68,34 @@ jobs:
           cd depends
           make HOST=x86_64-w64-mingw32 -j2
 
+      - name: Corrigir PROCESSOR_NUMBER no MinGW winbase.h
+        run: |
+          # Adicionar typedef PROCESSOR_NUMBER antes da linha 2778 do winbase.h
+          sudo python3 - << 'PYEOF'
+path = "/usr/share/mingw-w64/include/winbase.h"
+with open(path) as f:
+    lines = f.readlines()
+
+fix = [
+    "\n",
+    "#ifndef _PROCESSOR_NUMBER_DEFINED\n",
+    "#define _PROCESSOR_NUMBER_DEFINED\n",
+    "typedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n",
+    "#endif\n",
+    "\n",
+]
+
+# Inserir antes da linha que menciona GetNumaProcessorNodeEx
+for i, line in enumerate(lines):
+    if "GetNumaProcessorNodeEx" in line:
+        lines = lines[:i] + fix + lines[i:]
+        print(f"Fix inserido antes da linha {i}")
+        break
+
+with open(path, "w") as f:
+    f.writelines(lines)
+PYEOF
+
       - name: Configurar build
         run: |
           ./autogen.sh
