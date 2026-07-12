@@ -70,31 +70,22 @@ jobs:
 
       - name: Corrigir PROCESSOR_NUMBER no MinGW winbase.h
         run: |
-          # Adicionar typedef PROCESSOR_NUMBER antes da linha 2778 do winbase.h
-          sudo python3 - << 'PYEOF'
+          cat > /tmp/fix_mingw.py << 'SCRIPTEOF'
 path = "/usr/share/mingw-w64/include/winbase.h"
+fix = "#ifndef _PROCESSOR_NUMBER_DEFINED\n#define _PROCESSOR_NUMBER_DEFINED\ntypedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n#endif\n"
 with open(path) as f:
-    lines = f.readlines()
-
-fix = [
-    "\n",
-    "#ifndef _PROCESSOR_NUMBER_DEFINED\n",
-    "#define _PROCESSOR_NUMBER_DEFINED\n",
-    "typedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n",
-    "#endif\n",
-    "\n",
-]
-
-# Inserir antes da linha que menciona GetNumaProcessorNodeEx
-for i, line in enumerate(lines):
-    if "GetNumaProcessorNodeEx" in line:
-        lines = lines[:i] + fix + lines[i:]
-        print(f"Fix inserido antes da linha {i}")
-        break
-
-with open(path, "w") as f:
-    f.writelines(lines)
-PYEOF
+    content = f.read()
+if "GetNumaProcessorNodeEx" in content and "_PROCESSOR_NUMBER_DEFINED" not in content:
+    idx = content.index("GetNumaProcessorNodeEx")
+    nl = content.rfind("\n", 0, idx) + 1
+    content = content[:nl] + fix + content[nl:]
+    with open(path, "w") as f:
+        f.write(content)
+    print("Fix aplicado!")
+else:
+    print("Ja corrigido ou nao encontrado")
+SCRIPTEOF
+          sudo python3 /tmp/fix_mingw.py
 
       - name: Configurar build
         run: |
