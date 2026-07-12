@@ -68,6 +68,13 @@ jobs:
           cd depends
           make HOST=x86_64-w64-mingw32 -j2
 
+      - name: Corrigir bug PROCESSOR_NUMBER no MinGW
+        run: |
+          sudo sed -i '1s|^|#include <winnt.h>\n|' /usr/share/mingw-w64/include/processthreadsapi.h
+          sudo sed -i '1s|^|#include <winnt.h>\n|' /usr/share/mingw-w64/include/winbase.h
+          echo "Correcao aplicada!"
+          grep "PROCESSOR_NUMBER" /usr/share/mingw-w64/include/processthreadsapi.h | head -3
+
       - name: Configurar build
         run: |
           ./autogen.sh
