@@ -69,18 +69,7 @@ jobs:
           make HOST=x86_64-w64-mingw32 -j2
 
       - name: Corrigir PROCESSOR_NUMBER no MinGW winbase.h
-        run: |
-          sudo python3 -c "
-path='/usr/share/mingw-w64/include/winbase.h'
-fix='#ifndef _PROCESSOR_NUMBER_DEFINED\n#define _PROCESSOR_NUMBER_DEFINED\ntypedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n#endif\n'
-f=open(path); c=f.read(); f.close()
-if 'GetNumaProcessorNodeEx' in c and '_PROCESSOR_NUMBER_DEFINED' not in c:
-    i=c.index('GetNumaProcessorNodeEx'); nl=c.rfind(chr(10),0,i)+1
-    c=c[:nl]+fix+c[nl:]; f=open(path,'w'); f.write(c); f.close()
-    print('Fix aplicado!')
-else:
-    print('Ja ok')
-"
+        run: sudo python3 fix_mingw.py
 
       - name: Configurar build
         run: |
