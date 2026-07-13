@@ -1,26 +1,32 @@
 import sys
+
 path = "/usr/share/mingw-w64/include/winbase.h"
-fix = (
-    "#ifndef _PROCESSOR_NUMBER_DEFINED\n"
-    "#define _PROCESSOR_NUMBER_DEFINED\n"
-    "typedef struct _PROCESSOR_NUMBER {\n"
-    "  WORD Group;\n"
-    "  BYTE Number;\n"
-    "  BYTE Reserved;\n"
-    "} PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n"
-    "#endif\n\n"
-)
+# Incluir winnt.h antes do bloco que usa PPROCESSOR_NUMBER
+fix = '#include <winnt.h> // Fix: needed for PROCESSOR_NUMBER\n'
+
 with open(path) as f:
     content = f.read()
-if "_PROCESSOR_NUMBER_DEFINED" in content:
+
+if 'Fix: needed for PROCESSOR_NUMBER' in content:
     print("Already fixed!")
     sys.exit(0)
+
 if "GetNumaProcessorNodeEx" not in content:
     print("Marker not found!")
     sys.exit(1)
+
+# Encontrar o bloco #if que contém GetNumaProcessorNodeEx
 idx = content.index("GetNumaProcessorNodeEx")
-nl = content.rfind("\n", 0, idx) + 1
-content = content[:nl] + fix + content[nl:]
+# Voltar ate o #if mais proximo
+block_start = content.rfind("\n#if", 0, idx)
+if block_start == -1:
+    block_start = content.rfind("\n", 0, idx) + 1
+else:
+    block_start += 1
+
+content = content[:block_start] + fix + content[block_start:]
+
 with open(path, "w") as f:
     f.write(content)
-print("Fix applied!")
+
+print("Fix applied: winnt.h included before PROCESSOR_NUMBER usage!")
