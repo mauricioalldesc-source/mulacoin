@@ -1,23 +1,50 @@
 import sys
 
-# O problema: windows.h inclui winnt.h DEPOIS de winbase.h
-# winbase.h usa PPROCESSOR_NUMBER que so' e' definido em winnt.h
-# Solucao: no windows.h, mover winnt.h para antes de winbase.h
+fix_line = (
+    "/* MinGW fix: forward declare PROCESSOR_NUMBER */\n"
+    "#if !defined(_PROCESSOR_NUMBER_) && defined(_WIN32_WINNT) && _WIN32_WINNT >= 0x0601\n"
+    "#define _PROCESSOR_NUMBER_\n"
+    "typedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n"
+    "#endif\n"
+)
 
-path = "/usr/share/mingw-w64/include/windows.h"
-with open(path) as f:
+# Fix processthreadsapi.h - inserir antes do primeiro uso de PPROCESSOR_NUMBER
+path1 = "/usr/share/mingw-w64/include/processthreadsapi.h"
+with open(path1) as f:
     content = f.read()
 
-print("Linhas com winnt e winbase:")
-for i, line in enumerate(content.split('\n')):
-    if 'winnt' in line.lower() or 'winbase' in line.lower():
-        print(f"  {i}: {line.strip()}")
-
-# Ver a ordem atual
-winnt_pos = content.lower().find('winnt')
-winbase_pos = content.lower().find('winbase')
-print(f"\nwinnt pos: {winnt_pos}, winbase pos: {winbase_pos}")
-if winnt_pos > winbase_pos:
-    print("PROBLEMA: winnt vem DEPOIS de winbase!")
+if "_PROCESSOR_NUMBER_" not in content and "PPROCESSOR_NUMBER" in content:
+    idx = content.index("PPROCESSOR_NUMBER")
+    nl = content.rfind("\n", 0, idx) + 1
+    # Voltar ate o #if
+    block = content.rfind("\n#if", 0, nl)
+    if block != -1:
+        insert_pos = block + 1
+    else:
+        insert_pos = nl
+    content = content[:insert_pos] + fix_line + content[insert_pos:]
+    with open(path1, "w") as f:
+        f.write(content)
+    print("processthreadsapi.h corrigido!")
 else:
-    print("OK: winnt vem antes de winbase")
+    print("processthreadsapi.h: ja corrigido ou PPROCESSOR_NUMBER nao encontrado")
+
+# Fix winbase.h - inserir antes do primeiro uso de PPROCESSOR_NUMBER
+path2 = "/usr/share/mingw-w64/include/winbase.h"
+with open(path2) as f:
+    content = f.read()
+
+if "_PROCESSOR_NUMBER_" not in content and "PPROCESSOR_NUMBER" in content:
+    idx = content.index("PPROCESSOR_NUMBER")
+    nl = content.rfind("\n", 0, idx) + 1
+    block = content.rfind("\n#if", 0, nl)
+    if block != -1:
+        insert_pos = block + 1
+    else:
+        insert_pos = nl
+    content = content[:insert_pos] + fix_line + content[insert_pos:]
+    with open(path2, "w") as f:
+        f.write(content)
+    print("winbase.h corrigido!")
+else:
+    print("winbase.h: ja corrigido ou PPROCESSOR_NUMBER nao encontrado")
