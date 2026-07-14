@@ -1,30 +1,23 @@
 import sys
 
-path = "/usr/share/mingw-w64/include/winbase.h"
-marker = "GetNumaProcessorNodeEx"
-typedef_fix = (
-    "typedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; }"
-    " PROCESSOR_NUMBER, *PPROCESSOR_NUMBER; /* MinGW fix */\n"
-)
+# O problema: windows.h inclui winnt.h DEPOIS de winbase.h
+# winbase.h usa PPROCESSOR_NUMBER que so' e' definido em winnt.h
+# Solucao: no windows.h, mover winnt.h para antes de winbase.h
 
+path = "/usr/share/mingw-w64/include/windows.h"
 with open(path) as f:
-    lines = f.readlines()
+    content = f.read()
 
-# Encontrar o bloco #if que contém o marker
-for i, line in enumerate(lines):
-    if marker in line:
-        print(f"Marker na linha {i}: {line.strip()}")
-        # Procurar o #if mais próximo acima
-        for j in range(i-1, max(0, i-20), -1):
-            print(f"  {j}: {lines[j].strip()}")
-            if lines[j].strip().startswith("#if") or lines[j].strip().startswith("#ifdef"):
-                # Inserir o typedef logo após o #if
-                if "PROCESSOR_NUMBER" not in lines[j+1]:
-                    lines.insert(j+1, typedef_fix)
-                    print(f"typedef inserido na linha {j+1}")
-                break
-        break
+print("Linhas com winnt e winbase:")
+for i, line in enumerate(content.split('\n')):
+    if 'winnt' in line.lower() or 'winbase' in line.lower():
+        print(f"  {i}: {line.strip()}")
 
-with open(path, "w") as f:
-    f.writelines(lines)
-print("Fix aplicado!")
+# Ver a ordem atual
+winnt_pos = content.lower().find('winnt')
+winbase_pos = content.lower().find('winbase')
+print(f"\nwinnt pos: {winnt_pos}, winbase pos: {winbase_pos}")
+if winnt_pos > winbase_pos:
+    print("PROBLEMA: winnt vem DEPOIS de winbase!")
+else:
+    print("OK: winnt vem antes de winbase")
