@@ -22,7 +22,6 @@
 #include "splashscreen.h"
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
-#endif
 
 #ifdef ENABLE_WALLET
 #include "paymentserver.h"
@@ -631,9 +630,7 @@ MAIN_FUNCTION
     /// 9. Main GUI initialization
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
-    // Install global event filter for processing Windows session related Windows messages (WM_QUERYENDSESSION and WM_ENDSESSION)
-#endif
-#endif
+// WinShutdownMonitor disabled for cross-compilation
     // Install qDebug() message handler to route to debug.log
     qInstallMessageHandler(DebugMessageHandler);
     // Allow parameter interaction before we create the options model
@@ -651,8 +648,7 @@ MAIN_FUNCTION
     {
         app.createWindow(networkStyle.data());
         app.requestInitialize();
-#endif
-#endif
+// WinShutdownMonitor::registerShutdownBlockReason disabled for cross-compilation
         app.exec();
         app.requestShutdown();
         app.exec();
