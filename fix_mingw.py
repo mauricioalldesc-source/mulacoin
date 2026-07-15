@@ -1,50 +1,39 @@
 import sys
 
-fix_line = (
-    "/* MinGW fix: forward declare PROCESSOR_NUMBER */\n"
-    "#if !defined(_PROCESSOR_NUMBER_) && defined(_WIN32_WINNT) && _WIN32_WINNT >= 0x0601\n"
-    "#define _PROCESSOR_NUMBER_\n"
-    "typedef struct _PROCESSOR_NUMBER { WORD Group; BYTE Number; BYTE Reserved; } PROCESSOR_NUMBER, *PPROCESSOR_NUMBER;\n"
-    "#endif\n"
-)
+# O problema: windows.h inclui winnt.h (linha 69) e winbase.h (linha 70)
+# winbase.h inclui processthreadsapi.h (linha 29)
+# processthreadsapi.h usa PPROCESSOR_NUMBER mas winnt.h ainda nao foi carregado
+# porque windows.h inclui winbase.h antes de winnt.h processar completamente
 
-# Fix processthreadsapi.h - inserir antes do primeiro uso de PPROCESSOR_NUMBER
-path1 = "/usr/share/mingw-w64/include/processthreadsapi.h"
-with open(path1) as f:
-    content = f.read()
+# Solucao: adicionar #include <winnt.h> no inicio do processthreadsapi.h
+path = "/usr/share/mingw-w64/include/processthreadsapi.h"
+with open(path) as f:
+    lines = f.readlines()
 
-if "_PROCESSOR_NUMBER_" not in content and "PPROCESSOR_NUMBER" in content:
-    idx = content.index("PPROCESSOR_NUMBER")
-    nl = content.rfind("\n", 0, idx) + 1
-    # Voltar ate o #if
-    block = content.rfind("\n#if", 0, nl)
-    if block != -1:
-        insert_pos = block + 1
-    else:
-        insert_pos = nl
-    content = content[:insert_pos] + fix_line + content[insert_pos:]
-    with open(path1, "w") as f:
-        f.write(content)
-    print("processthreadsapi.h corrigido!")
+print(f"Primeiras 10 linhas de processthreadsapi.h:")
+for i, l in enumerate(lines[:10]):
+    print(f"  {i}: {l.rstrip()}")
+
+# Verificar se ja tem winnt.h
+has_winnt = any('winnt' in l.lower() for l in lines[:20])
+print(f"Ja tem winnt.h: {has_winnt}")
+
+if not has_winnt:
+    # Inserir apos os guards de include (#ifndef/#define)
+    insert_at = 0
+    for i, line in enumerate(lines[:10]):
+        if line.strip().startswith('#define') and '_PROCESSTHREADSAPI' in line:
+            insert_at = i + 1
+            break
+    
+    lines.insert(insert_at, '#include <winnt.h> /* Fix: needed before PPROCESSOR_NUMBER */\n')
+    
+    with open(path, 'w') as f:
+        f.writelines(lines)
+    print(f"winnt.h inserido na linha {insert_at}!")
 else:
-    print("processthreadsapi.h: ja corrigido ou PPROCESSOR_NUMBER nao encontrado")
-
-# Fix winbase.h - inserir antes do primeiro uso de PPROCESSOR_NUMBER
-path2 = "/usr/share/mingw-w64/include/winbase.h"
-with open(path2) as f:
-    content = f.read()
-
-if "_PROCESSOR_NUMBER_" not in content and "PPROCESSOR_NUMBER" in content:
-    idx = content.index("PPROCESSOR_NUMBER")
-    nl = content.rfind("\n", 0, idx) + 1
-    block = content.rfind("\n#if", 0, nl)
-    if block != -1:
-        insert_pos = block + 1
-    else:
-        insert_pos = nl
-    content = content[:insert_pos] + fix_line + content[insert_pos:]
-    with open(path2, "w") as f:
-        f.write(content)
-    print("winbase.h corrigido!")
-else:
-    print("winbase.h: ja corrigido ou PPROCESSOR_NUMBER nao encontrado")
+    print("ja tem winnt.h, verificando o problema...")
+    for i, l in enumerate(lines):
+        if 'PPROCESSOR_NUMBER' in l:
+            print(f"  Primeiro uso linha {i}: {l.rstrip()}")
+            break
