@@ -171,7 +171,7 @@ public:
 
         // Mulacoin é uma rede nova: sem DNS seeds ainda. Adicione os seus próprios nodes
         // aqui (ou conecte via -addnode=IP) à medida que a rede crescer.
-        // vSeeds.push_back(CDNSSeedData("example.com", "seed.example.com", true));
+        vSeeds.push_back(CDNSSeedData("mulacoin.com.br", "seed.mulacoin.com.br", true));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50);  // endereços começam com 'M'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,13);  // endereços P2SH começam com '6'
