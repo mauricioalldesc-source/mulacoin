@@ -477,7 +477,11 @@
       </tbody>
     </table>
 
-    <p style="margin-top: 24px; font-size: 13px; color: var(--texto-muted); line-height: 1.7; padding: 16px; background: rgba(212,175,55,0.05); border-radius: 4px;">
+    <p style="margin-top: 24px; font-size: 13px; color: var(--texto-muted); line-height: 1.7; padding: 16px; background: rgba(107,44,44,0.15); border: 1px solid rgba(229,57,53,0.2); border-radius: 4px;">
+      ⚠️ <strong style="color: #E53935">Limitação conhecida:</strong> O protocolo Mulacoin Vote opera com o princípio de <strong style="color: var(--creme)">1 endereço = 1 voto</strong>, não 1 pessoa = 1 voto. Uma pessoa com múltiplos endereços com saldo pode tecnicamente votar mais de uma vez. Esta é uma limitação inerente a sistemas de votação baseados em UTXO, compartilhada por outros projetos de governança blockchain como Dogecoin e Bitcoin. Para fins de transparência, todos os votos — incluindo eventuais votos múltiplos de um mesmo titular — ficam permanentemente visíveis na blockchain para auditoria pública. A Mulacoin Vote é um sistema experimental de democracia descentralizada e não substitui sistemas eleitorais oficiais.
+    </p>
+
+    <p style="margin-top: 16px; font-size: 13px; color: var(--texto-muted); line-height: 1.7; padding: 16px; background: rgba(212,175,55,0.05); border-radius: 4px;">
       💡 <strong style="color: var(--dourado)">Como auditar:</strong> Qualquer pessoa com a carteira Mulacoin e <code style="color: var(--dourado)">txindex=1</code> habilitado pode varrer a blockchain completa e verificar todos os votos independentemente. O protocolo MVOTE garante que apenas o primeiro voto de cada endereço seja contabilizado — tornando fraudes matematicamente impossíveis de ocultar.
     </p>
   </div>
@@ -525,7 +529,7 @@
 </footer>
 
 <script>
-  const API = 'https://vote.mulacoin.com.br';
+  const API = 'http://179.197.229.241:3200';
 
   // ── Status do node ──────────────────────────────────────────────────────────
   async function checkStatus() {
