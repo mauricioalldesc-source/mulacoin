@@ -412,6 +412,76 @@
     </div>
   </div>
 
+
+  <!-- PROTOCOLO DE TRANSPARENCIA -->
+  <div style="margin-top: 64px; background: var(--fundo-card); border: 1px solid rgba(212,175,55,0.15); border-radius: 8px; padding: 40px;">
+    <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--creme); margin-bottom: 8px;">
+      🔍 TRANSPARÊNCIA DO <span style="color: var(--dourado)">PROTOCOLO</span>
+    </h2>
+    <p style="font-size: 14px; color: var(--texto-muted); margin-bottom: 32px; font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase;">
+      Como a blockchain garante integridade dos votos
+    </p>
+
+    <div style="background: var(--fundo-card2); border-left: 3px solid var(--dourado); border-radius: 4px; padding: 24px; margin-bottom: 32px;">
+      <p style="font-size: 15px; color: var(--texto-muted); line-height: 1.8;">
+        Todas as transações de voto ficam <strong style="color: var(--creme)">permanentemente gravadas</strong> na blockchain Mulacoin — inclusive tentativas de voto duplicado. 
+        Qualquer pessoa pode auditar o histórico completo. A regra do protocolo é simples e imutável:
+      </p>
+      <div style="margin-top: 16px; background: #0D0900; border: 1px solid rgba(212,175,55,0.15); border-radius: 4px; padding: 16px; font-family: 'Space Mono', monospace; font-size: 13px; color: var(--dourado);">
+        MVOTE:1:VOTE:TEMA_ID:opcao<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<br>
+        &nbsp;&nbsp;Primeiro registro do endereço = <span style="color: #4CAF50">VÁLIDO</span><br>
+        &nbsp;&nbsp;Registros subsequentes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span style="color: #E53935">IGNORADOS</span>
+      </div>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+      <thead>
+        <tr>
+          <th style="padding: 14px 16px; text-align: left; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-muted); border-bottom: 1px solid rgba(212,175,55,0.15);">Característica</th>
+          <th style="padding: 14px 16px; text-align: center; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-muted); border-bottom: 1px solid rgba(212,175,55,0.15);">Eleição Tradicional</th>
+          <th style="padding: 14px 16px; text-align: center; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--dourado); border-bottom: 1px solid rgba(212,175,55,0.15);">Mulacoin Vote</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+          <td style="padding: 14px 16px; color: var(--texto-muted);">Confirmação do voto</td>
+          <td style="padding: 14px 16px; text-align: center; color: #E53935;">Você não sabe se foi contado</td>
+          <td style="padding: 14px 16px; text-align: center; color: #4CAF50;">TX confirmada = voto gravado ✅</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+          <td style="padding: 14px 16px; color: var(--texto-muted);">Auditoria</td>
+          <td style="padding: 14px 16px; text-align: center; color: #E53935;">Restrita a peritos autorizados</td>
+          <td style="padding: 14px 16px; text-align: center; color: #4CAF50;">Qualquer pessoa pode auditar ✅</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+          <td style="padding: 14px 16px; color: var(--texto-muted);">Resultado</td>
+          <td style="padding: 14px 16px; text-align: center; color: #E53935;">Pode ser contestado</td>
+          <td style="padding: 14px 16px; text-align: center; color: #4CAF50;">Blockchain é imutável ✅</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+          <td style="padding: 14px 16px; color: var(--texto-muted);">Voto duplicado</td>
+          <td style="padding: 14px 16px; text-align: center; color: #E53935;">Fraude oculta, difícil de detectar</td>
+          <td style="padding: 14px 16px; text-align: center; color: #4CAF50;">Visível e automaticamente ignorado ✅</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+          <td style="padding: 14px 16px; color: var(--texto-muted);">Transparência</td>
+          <td style="padding: 14px 16px; text-align: center; color: #E53935;">Processo fechado</td>
+          <td style="padding: 14px 16px; text-align: center; color: #4CAF50;">100% público e verificável ✅</td>
+        </tr>
+        <tr>
+          <td style="padding: 14px 16px; color: var(--texto-muted);">Histórico</td>
+          <td style="padding: 14px 16px; text-align: center; color: #E53935;">Dados podem ser alterados</td>
+          <td style="padding: 14px 16px; text-align: center; color: #4CAF50;">Imutável para sempre ✅</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 24px; font-size: 13px; color: var(--texto-muted); line-height: 1.7; padding: 16px; background: rgba(212,175,55,0.05); border-radius: 4px;">
+      💡 <strong style="color: var(--dourado)">Como auditar:</strong> Qualquer pessoa com a carteira Mulacoin e <code style="color: var(--dourado)">txindex=1</code> habilitado pode varrer a blockchain completa e verificar todos os votos independentemente. O protocolo MVOTE garante que apenas o primeiro voto de cada endereço seja contabilizado — tornando fraudes matematicamente impossíveis de ocultar.
+    </p>
+  </div>
+
   <!-- COMO VOTAR -->
   <div class="como-votar">
     <h2>COMO <span>VOTAR</span></h2>
@@ -455,7 +525,7 @@
 </footer>
 
 <script>
-  const API = 'https://vote.mulacoin.com.br';
+  const API = 'http://179.197.229.241:3200';
 
   // ── Status do node ──────────────────────────────────────────────────────────
   async function checkStatus() {
