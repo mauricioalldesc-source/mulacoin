@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mulacoin Vote — Painel Admin</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --dourado: #D4AF37;
+    --dourado-escuro: #9C7A1E;
+    --marrom: #5C4A3A;
+    --fundo: #1A1208;
+    --fundo-card: #241A0E;
+    --fundo-card2: #2E1F0F;
+    --texto: #F5EDD6;
+    --texto-muted: #A89070;
+    --verde: #4CAF50;
+    --vermelho: #E53935;
+    --borda: rgba(212,175,55,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--fundo); color: var(--texto); font-family: 'Inter', sans-serif; }
+
+  /* LOGIN */
+  #tela-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 0%, #3D2800 0%, var(--fundo) 70%);
+  }
+
+  .login-box {
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 48px;
+    width: 380px;
+    text-align: center;
+  }
+
+  .login-box h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--dourado);
+    margin-bottom: 8px;
+  }
+
+  .login-box p {
+    font-size: 13px;
+    color: var(--texto-muted);
+    margin-bottom: 32px;
+  }
+
+  .login-box input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--fundo-card2);
+    border: 1px solid var(--borda);
+    border-radius: 4px;
+    color: var(--texto);
+    font-size: 16px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+    outline: none;
+  }
+
+  .login-box input:focus { border-color: var(--dourado); }
+
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--dourado), var(--dourado-escuro));
+    color: var(--fundo);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .login-erro {
+    color: var(--vermelho);
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* ADMIN */
+  #tela-admin { display: none; }
+
+  nav {
+    background: var(--fundo-card);
+    border-bottom: 1px solid var(--borda);
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--dourado);
+  }
+
+  .nav-info {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--texto-muted);
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .btn-logout {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--vermelho);
+    border: 1px solid var(--vermelho);
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  main { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--dourado);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--texto-muted);
+    margin-top: 8px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--texto);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title span { color: var(--dourado); }
+
+  .tema-card {
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .tema-card.aprovado { border-color: rgba(76,175,80,0.3); }
+  .tema-card.pendente { border-color: rgba(212,175,55,0.3); }
+
+  .tema-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 16px;
+  }
+
+  .tema-titulo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--texto);
+  }
+
+  .tema-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--texto-muted);
+    margin-top: 6px;
+  }
+
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .badge-aprovado { background: rgba(76,175,80,0.15); color: var(--verde); border: 1px solid rgba(76,175,80,0.3); }
+  .badge-pendente { background: rgba(212,175,55,0.1); color: var(--dourado); border: 1px solid rgba(212,175,55,0.3); }
+
+  .tema-opcoes {
+    font-size: 13px;
+    color: var(--texto-muted);
+    margin-bottom: 16px;
+  }
+
+  .tema-opcoes span { color: var(--texto); margin-right: 8px; }
+
+  .btn-aprovar {
+    padding: 8px 20px;
+    background: var(--verde);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+
+  .btn-rejeitar {
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--vermelho);
+    border: 1px solid var(--vermelho);
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .btn-copiar {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--texto-muted);
+    border: 1px solid var(--borda);
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 48px;
+    color: var(--texto-muted);
+    background: var(--fundo-card);
+    border: 1px dashed var(--borda);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .instrucao {
+    background: var(--fundo-card2);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 40px;
+  }
+
+  .instrucao h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--dourado);
+    margin-bottom: 12px;
+  }
+
+  .code {
+    background: #0D0900;
+    border: 1px solid var(--borda);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--dourado);
+    overflow-x: auto;
+    margin: 8px 0;
+  }
+
+  .loading { text-align: center; padding: 32px; color: var(--texto-muted); }
+</style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="tela-login">
+  <div class="login-box">
+    <h1>🐴 ADMIN</h1>
+    <p>Painel de administração do Mulacoin Vote</p>
+    <input type="password" id="senha-input" placeholder="••••••••"
+           onkeypress="if(event.key==='Enter') fazLogin()">
+    <button class="btn-login" onclick="fazLogin()">ENTRAR</button>
+    <div class="login-erro" id="login-erro">Senha incorreta!</div>
+  </div>
+</div>
+
+<!-- TELA ADMIN -->
+<div id="tela-admin">
+  <nav>
+    <div class="nav-logo">🐴 MULACOIN VOTE — ADMIN</div>
+    <div class="nav-info">
+      <span id="nav-blocos">Carregando...</span>
+      <button class="btn-logout" onclick="logout()">SAIR</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- STATS -->
+    <div class="stats-bar" style="margin-top: 32px;">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-aprovados">—</div>
+        <div class="stat-label">Temas aprovados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-pendentes">—</div>
+        <div class="stat-label">Aguardando aprovação</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-votos">—</div>
+        <div class="stat-label">Total de votos</div>
+      </div>
+    </div>
+
+    <!-- PENDENTES -->
+    <h2 class="section-title">⏳ TEMAS <span>PENDENTES</span></h2>
+    <div id="lista-pendentes">
+      <div class="loading">Carregando...</div>
+    </div>
+
+    <!-- APROVADOS -->
+    <h2 class="section-title" style="margin-top: 40px;">✅ TEMAS <span>APROVADOS</span></h2>
+    <div id="lista-aprovados">
+      <div class="loading">Carregando...</div>
+    </div>
+
+    <!-- INSTRUÇÃO -->
+    <div class="instrucao">
+      <h3>Como aprovar temas via SSH</h3>
+      <p style="font-size: 13px; color: var(--texto-muted); margin-bottom: 12px;">
+        Para aprovar um tema, adicione o ID na lista <code style="color: var(--dourado)">TEMAS_APROVADOS</code> no VPS:
+      </p>
+      <div class="code">ssh root@179.197.229.241</div>
+      <div class="code">nano /opt/mulacoin/mulacoin_vote_api.py</div>
+      <p style="font-size: 13px; color: var(--texto-muted); margin: 8px 0;">Adicione o ID na lista e depois:</p>
+      <div class="code">systemctl restart mulacoin-vote-api</div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const API       = 'https://vote.mulacoin.com.br';
+  const SENHA_OK  = 'hPwaaYg6r';  // ← MUDE ESTA SENHA!
+
+  function fazLogin() {
+    const senha = document.getElementById('senha-input').value;
+    if (senha === SENHA_OK) {
+      document.getElementById('tela-login').style.display = 'none';
+      document.getElementById('tela-admin').style.display = 'block';
+      carregarDados();
+    } else {
+      document.getElementById('login-erro').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    document.getElementById('tela-login').style.display = 'flex';
+    document.getElementById('tela-admin').style.display = 'none';
+    document.getElementById('senha-input').value = '';
+  }
+
+  async function carregarDados() {
+    try {
+      const [status, temas, pendentes] = await Promise.all([
+        fetch(`${API}/status`).then(r => r.json()),
+        fetch(`${API}/temas`).then(r => r.json()),
+        fetch(`${API}/pendentes`).then(r => r.json())
+      ]);
+
+      // Stats
+      document.getElementById('nav-blocos').textContent = `Bloco: ${status.blocos.toLocaleString()}`;
+      document.getElementById('stat-aprovados').textContent = temas.length;
+      document.getElementById('stat-pendentes').textContent = pendentes.length;
+      document.getElementById('stat-votos').textContent = temas.reduce((a, t) => a + t.total, 0);
+
+      // Pendentes
+      const divPendentes = document.getElementById('lista-pendentes');
+      if (pendentes.length === 0) {
+        divPendentes.innerHTML = '<div class="empty">✅ Nenhum tema pendente de aprovação</div>';
+      } else {
+        divPendentes.innerHTML = pendentes.map(tema => `
+          <div class="tema-card pendente">
+            <div class="tema-header">
+              <div>
+                <div class="tema-titulo">${tema.titulo}</div>
+                <div class="tema-meta">
+                  ID: <strong style="color: var(--dourado)">${tema.id}</strong> |
+                  Bloco: ${tema.bloco} |
+                  Prazo: ${tema.prazo}
+                </div>
+              </div>
+              <span class="badge badge-pendente">⏳ Pendente</span>
+            </div>
+            <div class="tema-opcoes">
+              Opções: ${tema.opcoes.map(o => `<span>${o}</span>`).join('')}
+            </div>
+            <div>
+              <button class="btn-copiar" onclick="copiar('${tema.id}')">📋 Copiar ID</button>
+              <button class="btn-aprovar" onclick="aprovarTema('${tema.id}', '${tema.titulo}')">✅ Aprovar</button>
+              <button class="btn-rejeitar" onclick="alert('Para rejeitar, simplesmente não adicione este ID na lista de aprovados. O tema ficará oculto.')">❌ Ignorar</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Aprovados
+      const divAprovados = document.getElementById('lista-aprovados');
+      if (temas.length === 0) {
+        divAprovados.innerHTML = '<div class="empty">Nenhum tema aprovado ainda</div>';
+      } else {
+        divAprovados.innerHTML = temas.map(tema => `
+          <div class="tema-card aprovado">
+            <div class="tema-header">
+              <div>
+                <div class="tema-titulo">${tema.titulo}</div>
+                <div class="tema-meta">
+                  ID: <strong style="color: var(--dourado)">${tema.id}</strong> |
+                  Bloco: ${tema.bloco} |
+                  Prazo: ${tema.prazo} |
+                  ${tema.total} votos
+                </div>
+              </div>
+              <span class="badge badge-aprovado">✅ Aprovado</span>
+            </div>
+            <div class="tema-opcoes">
+              ${tema.opcoes.map(op => {
+                const count = tema.contagem[op] || 0;
+                const pct = tema.total > 0 ? (count/tema.total*100).toFixed(1) : 0;
+                return `<span>${op}: ${count} (${pct}%)</span>`;
+              }).join(' | ')}
+            </div>
+          </div>
+        `).join('');
+      }
+
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  function copiar(id) {
+    navigator.clipboard.writeText(id);
+    alert(`ID "${id}" copiado! Adicione-o na lista TEMAS_APROVADOS no VPS.`);
+  }
+
+  function aprovarTema(id, titulo) {
+    alert(
+      `Para aprovar o tema "${titulo}" (ID: ${id}):\n\n` +
+      `1. Conecte via SSH:\n   ssh root@179.197.229.241\n\n` +
+      `2. Edite o arquivo:\n   nano /opt/mulacoin/mulacoin_vote_api.py\n\n` +
+      `3. Adicione na lista TEMAS_APROVADOS:\n   "${id}",\n\n` +
+      `4. Reinicie a API:\n   systemctl restart mulacoin-vote-api\n\n` +
+      `O ID "${id}" foi copiado para a área de transferência!`
+    );
+    navigator.clipboard.writeText(id);
+  }
+
+  // Atualizar a cada 60 segundos
+  setInterval(carregarDados, 60000);
+</script>
+</body>
+</html>
