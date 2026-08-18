@@ -22,9 +22,6 @@ jobs:
       - name: Instalar PyInstaller
         run: pip install pyinstaller
 
-      - name: Copiar script para raiz
-        run: copy mulacoin_vote_gui.py .
-
       - name: Empacotar executável
         run: |
           pyinstaller --onefile --windowed `
