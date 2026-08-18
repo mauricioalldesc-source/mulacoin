@@ -1,0 +1,47 @@
+name: Build Mulacoin Vote GUI Windows
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'mulacoin_vote_gui.py'
+
+jobs:
+  build-vote-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar PyInstaller
+        run: pip install pyinstaller
+
+      - name: Copiar script para raiz
+        run: copy mulacoin_vote_gui.py .
+
+      - name: Empacotar executável
+        run: |
+          pyinstaller --onefile --windowed `
+            --name "mulacoin-vote" `
+            mulacoin_vote_gui.py
+
+      - name: Verificar executável
+        run: dir dist\
+
+      - name: Zipar
+        run: |
+          cd dist
+          Compress-Archive -Path mulacoin-vote.exe -DestinationPath ..\mulacoin-vote-v1.0.0-windows-x64.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mulacoin-vote-windows-x64
+          path: mulacoin-vote-v1.0.0-windows-x64.zip
+          retention-days: 30
