@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mulacoin Explorer ⛓️ — Blockchain Browser</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --dourado: #D4AF37;
+    --dourado-escuro: #9C7A1E;
+    --fundo: #1A1208;
+    --fundo-card: #241A0E;
+    --fundo-card2: #2E1F0F;
+    --texto: #F5EDD6;
+    --texto-muted: #A89070;
+    --verde: #4CAF50;
+    --vermelho: #E53935;
+    --azul: #2196F3;
+    --borda: rgba(212,175,55,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--fundo); color: var(--texto); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    background: rgba(26,18,8,0.95);
+    border-bottom: 1px solid var(--borda);
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--dourado); text-decoration: none; }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--texto-muted); text-decoration: none; }
+  .nav-links a:hover { color: var(--dourado); }
+
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; display: inline-block; margin-right: 6px; animation: pulsar 2s infinite; }
+  .status-dot.online { background: var(--verde); }
+  @keyframes pulsar { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* HERO */
+  .hero {
+    background: radial-gradient(ellipse at 50% 0%, #3D2800 0%, var(--fundo) 70%);
+    padding: 48px 24px 32px;
+    text-align: center;
+  }
+
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px,10vw,96px);
+    background: linear-gradient(135deg, var(--dourado), #F5D776, var(--dourado-escuro));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1; margin-bottom: 8px; }
+
+  .hero p { font-size: 15px; color: var(--texto-muted); margin-bottom: 32px; }
+
+  /* BUSCA */
+  .busca-container { max-width: 700px; margin: 0 auto; display: flex; gap: 8px; }
+  .busca-input {
+    flex: 1; padding: 14px 20px;
+    background: var(--fundo-card); border: 1px solid var(--borda);
+    border-radius: 4px; color: var(--texto);
+    font-family: 'Space Mono', monospace; font-size: 13px;
+    outline: none;
+  }
+  .busca-input:focus { border-color: var(--dourado); }
+  .busca-input::placeholder { color: var(--texto-muted); }
+  .btn-busca {
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--dourado), var(--dourado-escuro));
+    color: var(--fundo); font-family: 'Space Mono', monospace;
+    font-weight: 700; font-size: 13px; border: none;
+    border-radius: 4px; cursor: pointer; white-space: nowrap;
+  }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 96px; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 16px; margin-bottom: 48px; }
+  .stat-card { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 8px; padding: 20px; text-align: center; }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--dourado); line-height: 1; }
+  .stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-muted); margin-top: 6px; }
+
+  /* SECTION */
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--texto); }
+  .section-title span { color: var(--dourado); }
+  .btn-refresh { font-family: 'Space Mono', monospace; font-size: 11px; padding: 6px 14px;
+    background: transparent; color: var(--texto-muted); border: 1px solid var(--borda);
+    border-radius: 3px; cursor: pointer; }
+  .btn-refresh:hover { color: var(--dourado); border-color: var(--dourado); }
+
+  /* TABELA */
+  .tabela { width: 100%; border-collapse: collapse; margin-bottom: 48px; }
+  .tabela th { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--texto-muted); padding: 12px 16px;
+    text-align: left; border-bottom: 1px solid var(--borda); }
+  .tabela td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .tabela tr:hover td { background: rgba(212,175,55,0.03); }
+  .tabela tr:last-child td { border-bottom: none; }
+
+  .hash-link { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--dourado);
+    text-decoration: none; }
+  .hash-link:hover { text-decoration: underline; }
+
+  .badge-vote { background: rgba(76,175,80,0.15); color: var(--verde);
+    border: 1px solid rgba(76,175,80,0.3); font-family: 'Space Mono', monospace;
+    font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+  .badge-coinbase { background: rgba(212,175,55,0.1); color: var(--dourado);
+    border: 1px solid rgba(212,175,55,0.3); font-family: 'Space Mono', monospace;
+    font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+
+  /* DETALHE */
+  #detalhe { display: none; margin-bottom: 48px; }
+  .detalhe-card { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 8px; padding: 32px; }
+  .detalhe-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--dourado); margin-bottom: 20px; }
+  .detalhe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media(max-width:600px){ .detalhe-grid { grid-template-columns: 1fr; } }
+  .detalhe-item label { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--texto-muted); display: block; margin-bottom: 4px; }
+  .detalhe-item span { font-size: 14px; color: var(--texto); word-break: break-all; }
+  .detalhe-item span.mono { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--dourado); }
+
+  .vote-box { background: rgba(76,175,80,0.08); border: 1px solid rgba(76,175,80,0.2);
+    border-radius: 6px; padding: 16px; margin: 16px 0; }
+  .vote-box h4 { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--verde);
+    letter-spacing: 1px; margin-bottom: 8px; }
+  .vote-box p { font-size: 14px; color: var(--texto); font-family: 'Space Mono', monospace; }
+
+  .btn-voltar { font-family: 'Space Mono', monospace; font-size: 12px; padding: 8px 16px;
+    background: transparent; color: var(--texto-muted); border: 1px solid var(--borda);
+    border-radius: 3px; cursor: pointer; margin-bottom: 16px; }
+  .btn-voltar:hover { color: var(--dourado); }
+
+  .loading { text-align: center; padding: 48px; color: var(--texto-muted); }
+  .spinner { width: 32px; height: 32px; border: 3px solid rgba(212,175,55,0.2);
+    border-top-color: var(--dourado); border-radius: 50%;
+    animation: spin 1s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media(max-width:640px){ .nav-links { display: none; } nav { padding: 16px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">🐴 MULACOIN</a>
+  <ul class="nav-links">
+    <li><a href="/">Início</a></li>
+    <li><a href="/vote.html">🗳️ Votar</a></li>
+    <li><a href="/explorer.html">⛓️ Explorer</a></li>
+  </ul>
+  <div style="font-family:'Space Mono',monospace; font-size:12px; color:var(--texto-muted);">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">Conectando...</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>⛓️ EXPLORER</h1>
+  <p>Explore blocos, transações e votos registrados na blockchain Mulacoin</p>
+  <div class="busca-container">
+    <input class="busca-input" id="buscaInput" 
+           placeholder="Buscar por bloco, hash de transação ou endereço M..."
+           onkeypress="if(event.key==='Enter') buscar()">
+    <button class="btn-busca" onclick="buscar()">🔍 BUSCAR</button>
+  </div>
+</div>
+
+<main>
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value" id="statBlocos">—</div>
+      <div class="stat-label">Blocos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statPeers">—</div>
+      <div class="stat-label">Peers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statHashrate">—</div>
+      <div class="stat-label">Hashrate</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statDif">—</div>
+      <div class="stat-label">Dificuldade</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statVotos">—</div>
+      <div class="stat-label">Votos na chain</div>
+    </div>
+  </div>
+
+  <!-- DETALHE (oculto inicialmente) -->
+  <div id="detalhe">
+    <button class="btn-voltar" onclick="fecharDetalhe()">← Voltar</button>
+    <div class="detalhe-card" id="detalheConteudo">
+      <div class="loading"><div class="spinner"></div><p>Carregando...</p></div>
+    </div>
+  </div>
+
+  <!-- BLOCOS RECENTES -->
+  <div id="secaoBlocos">
+    <div class="section-header">
+      <h2 class="section-title">BLOCOS <span>RECENTES</span></h2>
+      <button class="btn-refresh" onclick="carregarBlocos()">🔄 Atualizar</button>
+    </div>
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Altura</th>
+          <th>Hash</th>
+          <th>Hora</th>
+          <th>Transações</th>
+          <th>Tamanho</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaBlocos">
+        <tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+  const API = 'https://vote.mulacoin.com.br';
+
+  function formatHash(hash, len=16) {
+    return hash ? hash.substring(0,len) + '...' : '—';
+  }
+
+  function formatTempo(ts) {
+    const d = new Date(ts * 1000);
+    return d.toLocaleString('pt-BR');
+  }
+
+  function formatHashrate(hr) {
+    if (hr > 1e9) return (hr/1e9).toFixed(2) + ' GH/s';
+    if (hr > 1e6) return (hr/1e6).toFixed(2) + ' MH/s';
+    if (hr > 1e3) return (hr/1e3).toFixed(2) + ' KH/s';
+    return hr.toFixed(0) + ' H/s';
+  }
+
+  // ── Status e Info ──────────────────────────────────────────────────────────
+  async function carregarInfo() {
+    try {
+      const [info, temas] = await Promise.all([
+        fetch(`${API}/info`).then(r => r.json()),
+        fetch(`${API}/temas`).then(r => r.json()),
+      ]);
+
+      document.getElementById('statusDot').classList.add('online');
+      document.getElementById('statusText').textContent = `Online · Bloco ${info.blocos.toLocaleString()}`;
+      document.getElementById('statBlocos').textContent = info.blocos.toLocaleString();
+      document.getElementById('statPeers').textContent = info.peers;
+      document.getElementById('statHashrate').textContent = formatHashrate(info.hashrate);
+      document.getElementById('statDif').textContent = info.dificuldade.toFixed(4);
+
+      const totalVotos = temas.reduce((a, t) => a + t.total, 0);
+      document.getElementById('statVotos').textContent = totalVotos;
+    } catch(e) {
+      document.getElementById('statusText').textContent = 'Offline';
+    }
+  }
+
+  // ── Blocos Recentes ────────────────────────────────────────────────────────
+  async function carregarBlocos() {
+    const tbody = document.getElementById('tabelaBlocos');
+    tbody.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr>';
+    try {
+      const blocos = await fetch(`${API}/blocos`).then(r => r.json());
+      tbody.innerHTML = blocos.map(b => `
+        <tr>
+          <td><a class="hash-link" onclick="verBloco(${b.altura})" href="#">#${b.altura}</a></td>
+          <td><a class="hash-link" onclick="verBloco('${b.hash}')" href="#">${formatHash(b.hash)}</a></td>
+          <td style="color:var(--texto-muted); font-size:13px;">${formatTempo(b.tempo)}</td>
+          <td style="color:var(--texto);">${b.txs}</td>
+          <td style="color:var(--texto-muted); font-size:13px;">${(b.tamanho/1024).toFixed(2)} KB</td>
+        </tr>
+      `).join('');
+    } catch(e) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--vermelho)">Erro ao carregar blocos</td></tr>';
+    }
+  }
+
+  // ── Ver Bloco ──────────────────────────────────────────────────────────────
+  async function verBloco(param) {
+    mostrarDetalhe();
+    try {
+      const b = await fetch(`${API}/bloco/${param}`).then(r => r.json());
+      if (b.erro) throw new Error(b.erro);
+
+      const txsHtml = b.txs.map(tx => `
+        <tr>
+          <td>
+            <a class="hash-link" onclick="verTx('${tx.txid}')" href="#">${formatHash(tx.txid)}</a>
+            ${tx.is_coinbase ? '<span class="badge-coinbase">⛏️ Recompensa</span>' : ''}
+            ${tx.is_vote ? '<span class="badge-vote">🗳️ Voto</span>' : ''}
+          </td>
+          <td style="color:var(--texto); font-family:'Space Mono',monospace; font-size:13px;">
+            ${tx.valor.toFixed(8)} FazoL
+          </td>
+          ${tx.vote_data ? `<td style="font-size:12px;color:var(--verde)">${tx.vote_data}</td>` : '<td></td>'}
+        </tr>
+      `).join('');
+
+      document.getElementById('detalheConteudo').innerHTML = `
+        <div class="detalhe-titulo">📦 BLOCO #${b.altura}</div>
+        <div class="detalhe-grid">
+          <div class="detalhe-item">
+            <label>Hash</label>
+            <span class="mono">${b.hash}</span>
+          </div>
+          <div class="detalhe-item">
+            <label>Data/Hora</label>
+            <span>${formatTempo(b.tempo)}</span>
+          </div>
+          <div class="detalhe-item">
+            <label>Bloco anterior</label>
+            <span><a class="hash-link" onclick="verBloco('${b.anterior}')" href="#">${formatHash(b.anterior)}</a></span>
+          </div>
+          <div class="detalhe-item">
+            <label>Próximo bloco</label>
+            <span>${b.proximo ? `<a class="hash-link" onclick="verBloco('${b.proximo}')" href="#">${formatHash(b.proximo)}</a>` : '— (último bloco)'}</span>
+          </div>
+          <div class="detalhe-item">
+            <label>Tamanho</label>
+            <span>${(b.tamanho/1024).toFixed(2)} KB</span>
+          </div>
+          <div class="detalhe-item">
+            <label>Dificuldade</label>
+            <span>${b.dif}</span>
+          </div>
+        </div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--texto);margin-bottom:12px;">
+          TRANSAÇÕES <span style="color:var(--dourado)">(${b.txs.length})</span>
+        </h3>
+        <table class="tabela">
+          <thead><tr><th>TXID</th><th>Valor</th><th>Dados</th></tr></thead>
+          <tbody>${txsHtml}</tbody>
+        </table>
+      `;
+    } catch(e) {
+      document.getElementById('detalheConteudo').innerHTML = `<p style="color:var(--vermelho)">Erro: ${e.message}</p>`;
+    }
+  }
+
+  // ── Ver TX ─────────────────────────────────────────────────────────────────
+  async function verTx(txid) {
+    mostrarDetalhe();
+    try {
+      const tx = await fetch(`${API}/tx/${txid}`).then(r => r.json());
+      if (tx.erro) throw new Error(tx.erro);
+
+      const voteHtml = tx.vote_data ? `
+        <div class="vote-box">
+          <h4>🗳️ TRANSAÇÃO DE VOTAÇÃO DETECTADA</h4>
+          <p>${tx.vote_data}</p>
+        </div>` : '';
+
+      const voutsHtml = tx.vouts.map(v => `
+        <tr>
+          <td style="font-family:'Space Mono',monospace;font-size:12px;color:var(--dourado)">${v.endereco || '—'}</td>
+          <td style="font-family:'Space Mono',monospace;font-size:13px">${v.valor.toFixed(8)} FazoL</td>
+          <td style="font-size:12px;color:var(--texto-muted)">${v.tipo}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('detalheConteudo').innerHTML = `
+        <div class="detalhe-titulo">📋 TRANSAÇÃO</div>
+        ${voteHtml}
+        <div class="detalhe-grid">
+          <div class="detalhe-item" style="grid-column:1/-1">
+            <label>TXID</label>
+            <span class="mono">${txid}</span>
+          </div>
+          <div class="detalhe-item">
+            <label>Bloco</label>
+            <span><a class="hash-link" onclick="verBloco('${tx.bloco}')" href="#">${formatHash(tx.bloco)}</a></span>
+          </div>
+          <div class="detalhe-item">
+            <label>Confirmações</label>
+            <span>${tx.confirmacoes.toLocaleString()}</span>
+          </div>
+          <div class="detalhe-item">
+            <label>Data/Hora</label>
+            <span>${formatTempo(tx.tempo)}</span>
+          </div>
+          <div class="detalhe-item">
+            <label>Tipo</label>
+            <span>${tx.is_coinbase ? '⛏️ Coinbase (Recompensa de mineração)' : '💸 Transferência'}</span>
+          </div>
+        </div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--texto);margin-bottom:12px;">
+          SAÍDAS <span style="color:var(--dourado)">(${tx.vouts.length})</span>
+        </h3>
+        <table class="tabela">
+          <thead><tr><th>Endereço</th><th>Valor</th><th>Tipo</th></tr></thead>
+          <tbody>${voutsHtml}</tbody>
+        </table>
+      `;
+    } catch(e) {
+      document.getElementById('detalheConteudo').innerHTML = `<p style="color:var(--vermelho)">Erro: ${e.message}</p>`;
+    }
+  }
+
+  // ── Busca ──────────────────────────────────────────────────────────────────
+  async function buscar() {
+    const query = document.getElementById('buscaInput').value.trim();
+    if (!query) return;
+
+    if (/^\d+$/.test(query)) {
+      verBloco(parseInt(query));
+    } else if (query.length === 64) {
+      // Pode ser hash de bloco ou TX — tenta TX primeiro
+      try {
+        const tx = await fetch(`${API}/tx/${query}`).then(r => r.json());
+        if (!tx.erro) { verTx(query); return; }
+      } catch(e) {}
+      verBloco(query);
+    } else if (query.startsWith('M')) {
+      alert('Busca por endereço em desenvolvimento!');
+    } else {
+      alert('Digite um número de bloco, hash de transação (64 caracteres) ou endereço M...');
+    }
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function mostrarDetalhe() {
+    document.getElementById('detalhe').style.display = 'block';
+    document.getElementById('detalheConteudo').innerHTML = '<div class="loading"><div class="spinner"></div><p>Carregando...</p></div>';
+    document.getElementById('detalhe').scrollIntoView({behavior:'smooth'});
+  }
+
+  function fecharDetalhe() {
+    document.getElementById('detalhe').style.display = 'none';
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  carregarInfo();
+  carregarBlocos();
+  setInterval(() => { carregarInfo(); carregarBlocos(); }, 30000);
+</script>
+</body>
+</html>
