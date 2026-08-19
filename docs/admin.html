@@ -360,12 +360,16 @@
     <div class="instrucao">
       <h3>Como aprovar temas via SSH</h3>
       <p style="font-size: 13px; color: var(--texto-muted); margin-bottom: 12px;">
-        Para aprovar um tema, adicione o ID na lista <code style="color: var(--dourado)">TEMAS_APROVADOS</code> no VPS:
+        Para aprovar um tema, conecte ao VPS e use o script de aprovação:
       </p>
       <div class="code">ssh root@179.197.229.241</div>
-      <div class="code">nano /opt/mulacoin/mulacoin_vote_api.py</div>
-      <p style="font-size: 13px; color: var(--texto-muted); margin: 8px 0;">Adicione o ID na lista e depois:</p>
-      <div class="code">systemctl restart mulacoin-vote-api</div>
+      <p style="font-size: 13px; color: var(--texto-muted); margin: 8px 0;">Ver temas pendentes:</p>
+      <div class="code">/opt/mulacoin/aprovar_tema.sh</div>
+      <p style="font-size: 13px; color: var(--texto-muted); margin: 8px 0;">Aprovar um tema:</p>
+      <div class="code">/opt/mulacoin/aprovar_tema.sh ID_DO_TEMA "Descrição do tema"</div>
+      <p style="font-size: 13px; color: var(--texto-muted); margin: 8px 0;">Exemplo:</p>
+      <div class="code">/opt/mulacoin/aprovar_tema.sh FA751E7A "Presidente 2026?"</div>
+      <p style="font-size: 13px; color: var(--dourado); margin-top: 12px;">✅ O script aprova o tema e reinicia a API automaticamente!</p>
     </div>
   </main>
 </div>
