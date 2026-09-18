@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mulacoin Vote — Decentralized Blockchain Voting</title>
+<meta name="description" content="Vote on topics recorded permanently on the Mulacoin blockchain. Transparent, immutable and auditable by anyone.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗳️</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --dourado: #D4AF37;
+    --dourado-escuro: #9C7A1E;
+    --fundo: #1A1208;
+    --fundo-card: #241A0E;
+    --fundo-card2: #2E1F0F;
+    --creme: #F5EDD6;
+    --texto-muted: #A89070;
+    --verde: #4CAF50;
+    --vermelho: #E53935;
+    --borda: rgba(212,175,55,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--fundo); color: var(--creme); font-family: 'Inter', sans-serif; }
+
+  nav {
+    background: rgba(26,18,8,0.95); border-bottom: 1px solid var(--borda);
+    padding: 16px 32px; display: flex; justify-content: space-between;
+    align-items: center; position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--dourado); text-decoration: none; }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--texto-muted); text-decoration: none; }
+  .nav-links a:hover { color: var(--dourado); }
+  .nav-status { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--texto-muted);
+    display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; animation: pulsar 2s infinite; }
+  .status-dot.online { background: var(--verde); }
+  @keyframes pulsar { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .hero { background: radial-gradient(ellipse at 50% 0%, #3D2800 0%, var(--fundo) 70%);
+    padding: 64px 24px 48px; text-align: center; }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px,10vw,96px);
+    background: linear-gradient(135deg, var(--dourado), #F5D776, var(--dourado-escuro));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1; margin-bottom: 8px; }
+  .hero p { font-size: 16px; color: var(--texto-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+  main { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+
+  /* TEMAS */
+  .tema-card { background: var(--fundo-card); border: 1px solid var(--borda);
+    border-radius: 8px; padding: 32px; margin-bottom: 24px; }
+  .tema-card.encerrado { opacity: 0.7; }
+
+  .tema-header { display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+  .tema-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--creme); }
+  .tema-meta { font-family: 'Space Mono', monospace; font-size: 11px;
+    color: var(--texto-muted); margin-top: 4px; }
+
+  .badge { font-family: 'Space Mono', monospace; font-size: 11px; padding: 4px 14px;
+    border-radius: 20px; white-space: nowrap; }
+  .badge-open { background: rgba(76,175,80,0.12); color: var(--verde);
+    border: 1px solid rgba(76,175,80,0.3); }
+  .badge-closed { background: rgba(229,57,53,0.12); color: var(--vermelho);
+    border: 1px solid rgba(229,57,53,0.3); }
+
+  .opcoes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 12px; margin-bottom: 24px; }
+  .opcao-btn {
+    background: var(--fundo-card2); border: 1px solid var(--borda);
+    border-radius: 6px; padding: 16px; cursor: pointer;
+    transition: all .2s; text-align: left;
+  }
+  .opcao-btn:hover { border-color: var(--dourado); background: rgba(212,175,55,0.05); }
+  .opcao-btn.selected { border-color: var(--dourado); background: rgba(212,175,55,0.1); }
+  .opcao-nome { font-size: 15px; font-weight: 600; color: var(--creme); margin-bottom: 8px; }
+  .opcao-barra-container { background: rgba(255,255,255,0.05); border-radius: 3px;
+    height: 6px; overflow: hidden; margin-bottom: 6px; }
+  .opcao-barra { height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--dourado-escuro), var(--dourado));
+    transition: width .6s ease; }
+  .opcao-info { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--texto-muted); }
+
+  .btn-votar {
+    width: 100%; padding: 16px; font-family: 'Space Mono', monospace;
+    font-weight: 700; font-size: 14px; letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--dourado), var(--dourado-escuro));
+    color: var(--fundo); border: none; border-radius: 6px;
+    cursor: pointer; transition: opacity .2s;
+  }
+  .btn-votar:hover { opacity: 0.85; }
+  .btn-votar:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .vote-msg { font-family: 'Space Mono', monospace; font-size: 13px;
+    text-align: center; padding: 12px; border-radius: 4px; margin-top: 12px; display: none; }
+  .vote-msg.success { background: rgba(76,175,80,0.1); color: var(--verde);
+    border: 1px solid rgba(76,175,80,0.2); }
+  .vote-msg.error { background: rgba(229,57,53,0.1); color: var(--vermelho);
+    border: 1px solid rgba(229,57,53,0.2); }
+
+  /* TRANSPARÊNCIA */
+  .transparency-section { background: var(--fundo-card); border: 1px solid var(--borda);
+    border-radius: 8px; padding: 40px; margin-top: 64px; }
+  .transparency-section h2 { font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+    color: var(--creme); margin-bottom: 8px; }
+  .transparency-section h2 span { color: var(--dourado); }
+
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 24px 0; }
+  .compare-table th { padding: 12px 16px; font-family: 'Space Mono', monospace; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--texto-muted);
+    border-bottom: 1px solid var(--borda); text-align: left; }
+  .compare-table th:last-child { color: var(--dourado); }
+  .compare-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .compare-table td:first-child { color: var(--texto-muted); }
+  .compare-table td:nth-child(2) { color: var(--vermelho); }
+  .compare-table td:last-child { color: var(--verde); }
+
+  .code-box { background: #0D0900; border: 1px solid var(--borda); border-radius: 4px;
+    padding: 16px; font-family: 'Space Mono', monospace; font-size: 13px;
+    color: var(--dourado); margin: 12px 0; }
+
+  .warning-box { background: rgba(107,44,44,0.15); border: 1px solid rgba(229,57,53,0.2);
+    border-radius: 4px; padding: 16px; margin-top: 16px;
+    font-size: 13px; color: var(--texto-muted); line-height: 1.7; }
+
+  /* HOW TO VOTE */
+  .how-section { margin-top: 64px; }
+  .how-section h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px;
+    color: var(--creme); margin-bottom: 32px; }
+  .how-section h2 span { color: var(--dourado); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 24px; }
+  .step { display: flex; gap: 16px; }
+  .step-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px;
+    color: var(--dourado); opacity: 0.4; line-height: 1; flex-shrink: 0; }
+  .step p { font-size: 14px; color: var(--texto-muted); line-height: 1.7; padding-top: 8px; }
+  .step p strong { color: var(--creme); }
+  .code { background: #0D0900; border: 1px solid var(--borda); border-radius: 3px;
+    padding: 8px 12px; font-family: 'Space Mono', monospace; font-size: 12px;
+    color: var(--dourado); display: inline-block; margin-top: 6px; }
+
+  .loading { text-align: center; padding: 48px; color: var(--texto-muted); }
+  .spinner { width: 32px; height: 32px; border: 3px solid rgba(212,175,55,0.2);
+    border-top-color: var(--dourado); border-radius: 50%;
+    animation: spin 1s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer { background: var(--fundo-card); border-top: 1px solid var(--borda);
+    padding: 32px; text-align: center;
+    font-size: 13px; color: var(--texto-muted); }
+  footer a { color: var(--dourado); text-decoration: none; }
+
+  @media(max-width:640px){ .nav-links { display: none; } nav { padding: 16px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/en/">🐴 MULACOIN</a>
+  <div class="nav-links">
+    <a href="/en/">Home</a>
+    <a href="/explorer.html">⛓️ Explorer</a>
+    <a href="/vote.html">🇧🇷 PT</a>
+  </div>
+  <div class="nav-status">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">Connecting...</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>🗳️ VOTE</h1>
+  <p>Cast your vote on topics permanently recorded on the Mulacoin blockchain —
+     transparent, immutable and auditable by anyone in the world.</p>
+</div>
+
+<main>
+  <div id="listaTemas">
+    <div class="loading"><div class="spinner"></div><p>Loading topics...</p></div>
+  </div>
+
+  <!-- HOW TO VOTE -->
+  <div class="how-section">
+    <h2>HOW TO <span>VOTE</span></h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <p><strong>Download the full Mulacoin package</strong> for your operating system.</p>
+          <p>Get it at <a href="/en/#download" style="color:var(--dourado)">mulacoin.com.br/en</a></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <p><strong>Extract the zip</strong> and run the startup script:</p>
+          <div class="code">🐧 Linux: ./iniciar-mulacoin.sh</div><br>
+          <div class="code">🪟 Windows: Iniciar-Mulacoin.bat</div>
+          <p style="margin-top:8px">The wallet and voting interface open automatically.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <p><strong>Wait for the wallet to sync</strong> with the Mulacoin network.
+          Then select a topic, choose your option and click
+          <strong>"Register Vote on Blockchain"</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <p><strong>Track results in real time</strong> on this page.
+          Anyone can independently audit all votes directly on the blockchain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSPARENCY -->
+  <div class="transparency-section">
+    <h2>🔍 PROTOCOL <span>TRANSPARENCY</span></h2>
+    <p style="font-size:14px; color:var(--texto-muted); margin-bottom:24px; line-height:1.7;">
+      All vote transactions are <strong style="color:var(--creme)">permanently recorded</strong>
+      on the Mulacoin blockchain — including duplicate vote attempts.
+      Anyone can audit the complete history. The protocol rule is simple and immutable:
+    </p>
+    <div class="code-box">
+      MVOTE:1:VOTE:TOPIC_ID:option<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<br>
+      &nbsp;&nbsp;First record per address = <span style="color:#4CAF50">VALID</span><br>
+      &nbsp;&nbsp;Subsequent records &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span style="color:#E53935">IGNORED</span>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Traditional Election</th>
+          <th>Mulacoin Vote</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Vote confirmation</td><td>❌ Can't verify your vote was counted</td><td>✅ TX confirmed = recorded forever</td></tr>
+        <tr><td>Audit access</td><td>❌ Restricted to authorized experts</td><td>✅ Anyone can audit</td></tr>
+        <tr><td>Result integrity</td><td>❌ Can be contested</td><td>✅ Blockchain is immutable</td></tr>
+        <tr><td>Duplicate votes</td><td>❌ Hidden fraud</td><td>✅ Visible and automatically ignored</td></tr>
+        <tr><td>Transparency</td><td>❌ Closed process</td><td>✅ 100% public</td></tr>
+        <tr><td>Historical record</td><td>❌ Data can be altered</td><td>✅ Immutable forever</td></tr>
+      </tbody>
+    </table>
+
+    <div class="warning-box">
+      ⚠️ <strong style="color:var(--vermelho)">Known limitation:</strong>
+      The Mulacoin Vote protocol operates on the principle of
+      <strong style="color:var(--creme)">1 address = 1 vote</strong>, not 1 person = 1 vote.
+      A person with multiple funded addresses can technically vote more than once.
+      This is an inherent limitation shared by other blockchain governance projects like
+      Dogecoin and Bitcoin. All votes — including potential duplicates — are permanently
+      visible on the blockchain for public audit. Mulacoin Vote is an experimental
+      decentralized democracy system and does not replace official electoral systems.
+    </div>
+
+    <p style="margin-top:24px; font-size:13px; color:var(--texto-muted); line-height:1.7;
+       padding:16px; background:rgba(212,175,55,0.05); border-radius:4px;">
+      💡 <strong style="color:var(--dourado)">How to audit:</strong>
+      Anyone with the Mulacoin wallet and <code style="color:var(--dourado)">txindex=1</code>
+      enabled can scan the full blockchain and independently verify all votes.
+      The MVOTE protocol ensures only the first vote per address is counted —
+      making fraud mathematically impossible to hide.
+    </p>
+  </div>
+</main>
+
+<footer>
+  <p>
+    🐴 <strong style="color:var(--dourado)">MULACOIN (FazoL)</strong> — The Brazilian Blockchain<br>
+    <a href="/en/">Home</a> ·
+    <a href="/explorer.html">Explorer</a> ·
+    <a href="https://github.com/mauricioalldesc-source/mulacoin">GitHub</a> ·
+    <a href="/vote.html">🇧🇷 Versão em Português</a><br><br>
+    <span style="font-size:12px;">
+      Mulacoin is a political humor project. Not an investment. No financial returns promised.
+    </span>
+  </p>
+</footer>
+
+<script>
+  const API = 'https://vote.mulacoin.com.br';
+  let temas = [];
+  let selecionados = {};
+
+  // Status
+  async function carregarStatus() {
+    try {
+      const data = await fetch(`${API}/status`).then(r => r.json());
+      document.getElementById('statusDot').classList.add('online');
+      document.getElementById('statusText').textContent = `Online · Block ${data.blocos.toLocaleString()}`;
+    } catch(e) {
+      document.getElementById('statusText').textContent = 'Node offline';
+    }
+  }
+
+  // Temas
+  async function carregarTemas() {
+    try {
+      temas = await fetch(`${API}/temas`).then(r => r.json());
+      renderTemas();
+    } catch(e) {
+      document.getElementById('listaTemas').innerHTML =
+        '<p style="color:var(--vermelho);text-align:center;padding:48px">Error loading topics. Please try again.</p>';
+    }
+  }
+
+  function renderTemas() {
+    const div = document.getElementById('listaTemas');
+    if (!temas.length) {
+      div.innerHTML = '<p style="color:var(--texto-muted);text-align:center;padding:48px">No active voting topics at the moment.</p>';
+      return;
+    }
+    div.innerHTML = temas.map((tema, idx) => {
+      const encerrado = tema.encerrado;
+      const opcoes = tema.opcoes.map(op => {
+        const count = tema.contagem[op] || 0;
+        const pct = tema.total > 0 ? (count/tema.total*100) : 0;
+        return `
+          <div class="opcao-btn" onclick="${encerrado ? '' : `selecionar(${idx}, '${op}')`}"
+               id="opcao-${idx}-${op.replace(/[^a-z0-9]/gi,'_')}"
+               style="${encerrado ? 'cursor:default' : ''}">
+            <div class="opcao-nome">${op}</div>
+            <div class="opcao-barra-container">
+              <div class="opcao-barra" style="width:${pct}%"></div>
+            </div>
+            <div class="opcao-info">${count} vote${count !== 1 ? 's' : ''} — ${pct.toFixed(1)}%</div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="tema-card ${encerrado ? 'encerrado' : ''}">
+          <div class="tema-header">
+            <div>
+              <div class="tema-titulo">${tema.titulo}</div>
+              <div class="tema-meta">
+                ID: ${tema.id} · Deadline: ${tema.prazo} · ${tema.total} total vote${tema.total !== 1 ? 's' : ''}
+              </div>
+            </div>
+            <span class="badge ${encerrado ? 'badge-closed' : 'badge-open'}">
+              ${encerrado ? '🔴 Closed' : '🟢 Open'}
+            </span>
+          </div>
+          <div class="opcoes-grid">${opcoes}</div>
+          ${!encerrado ? `
+            <button class="btn-votar" id="btn-${idx}" onclick="votar(${idx})" disabled>
+              Select an option to vote
+            </button>
+            <div class="vote-msg" id="msg-${idx}"></div>
+          ` : `
+            <p style="font-family:'Space Mono',monospace;font-size:12px;
+               color:var(--texto-muted);text-align:center;padding:12px;">
+              🔒 This voting topic is closed
+            </p>
+          `}
+        </div>`;
+    }).join('');
+  }
+
+  function selecionar(idx, opcao) {
+    selecionados[idx] = opcao;
+    const tema = temas[idx];
+    tema.opcoes.forEach(op => {
+      const el = document.getElementById(`opcao-${idx}-${op.replace(/[^a-z0-9]/gi,'_')}`);
+      if (el) el.classList.toggle('selected', op === opcao);
+    });
+    const btn = document.getElementById(`btn-${idx}`);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = `🗳️ VOTE FOR "${opcao}"`;
+    }
+  }
+
+  function votar(idx) {
+    const tema = temas[idx];
+    const opcao = selecionados[idx];
+    if (!opcao) return;
+
+    const msg = document.getElementById(`msg-${idx}`);
+    const btn = document.getElementById(`btn-${idx}`);
+
+    if (!confirm(`Confirm your vote?\n\nTopic: ${tema.titulo}\nOption: ${opcao}\n\n⚠️ This vote will be PERMANENTLY recorded on the blockchain and cannot be changed.`)) return;
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Open your Mulacoin wallet to vote...';
+    msg.style.display = 'block';
+    msg.className = 'vote-msg';
+    msg.innerHTML = `
+      ℹ️ To register your vote on the blockchain, use the <strong>Mulacoin Vote</strong>
+      graphical interface included in the wallet package.<br><br>
+      <strong>Download:</strong> <a href="/en/#download" style="color:var(--dourado)">mulacoin.com.br/en/#download</a><br><br>
+      Or use the command line:<br>
+      <code style="color:var(--dourado)">python3 mulacoin_vote.py votar ${tema.id} "${opcao}"</code>
+    `;
+    btn.disabled = false;
+    btn.textContent = `🗳️ VOTE FOR "${opcao}"`;
+  }
+
+  // Auto-refresh
+  function refresh() {
+    carregarStatus();
+    carregarTemas();
+  }
+  refresh();
+  setInterval(refresh, 60000);
+</script>
+</body>
+</html>
