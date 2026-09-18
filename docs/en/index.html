@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mulacoin (FazoL) — Brazilian Blockchain with Decentralized Voting</title>
+<meta name="description" content="Mulacoin is a Brazilian meme coin forked from Dogecoin with a real decentralized voting system built directly on the blockchain. Transparent, immutable, auditable by anyone.">
+<meta property="og:title" content="Mulacoin — Decentralized Voting on the Blockchain">
+<meta property="og:description" content="A Brazilian meme coin with a real decentralized voting system. Every vote is permanently recorded on the blockchain.">
+<meta property="og:image" content="https://mulacoin.com.br/logo.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐴</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --dourado: #D4AF37;
+    --dourado-escuro: #9C7A1E;
+    --marrom: #5C4A3A;
+    --fundo: #1A1208;
+    --fundo-card: #241A0E;
+    --fundo-card2: #2E1F0F;
+    --creme: #F5EDD6;
+    --texto-muted: #A89070;
+    --verde: #4CAF50;
+    --vermelho: #E53935;
+    --borda: rgba(212,175,55,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--fundo); color: var(--creme); font-family: 'Inter', sans-serif; }
+  a { color: inherit; text-decoration: none; }
+
+  /* NAV */
+  nav {
+    background: rgba(26,18,8,0.95);
+    border-bottom: 1px solid var(--borda);
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--dourado); }
+  .nav-links { display: flex; gap: 28px; list-style: none; align-items: center; }
+  .nav-links a { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--texto-muted); transition: color .2s; }
+  .nav-links a:hover { color: var(--dourado); }
+  .nav-lang { font-family: 'Space Mono', monospace; font-size: 11px; padding: 6px 12px;
+    border: 1px solid var(--borda); border-radius: 3px; color: var(--texto-muted); }
+  .nav-lang:hover { border-color: var(--dourado); color: var(--dourado); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 80px 24px;
+    background: radial-gradient(ellipse at 50% 0%, #3D2800 0%, var(--fundo) 65%);
+    position: relative; overflow: hidden;
+  }
+
+  .hero::before {
+    content: '🐴';
+    position: absolute; font-size: 400px; opacity: 0.03;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 12px;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--dourado); margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 14vw, 140px); line-height: 0.9;
+    background: linear-gradient(135deg, var(--dourado) 0%, #F5D776 50%, var(--dourado-escuro) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 32px;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2.5vw, 22px); color: var(--texto-muted);
+    max-width: 700px; line-height: 1.6; margin-bottom: 48px;
+  }
+
+  .hero-sub strong { color: var(--creme); }
+
+  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+  .btn-primary {
+    padding: 16px 36px;
+    background: linear-gradient(135deg, var(--dourado), var(--dourado-escuro));
+    color: var(--fundo); font-family: 'Space Mono', monospace;
+    font-weight: 700; font-size: 13px; letter-spacing: 1px;
+    border-radius: 4px; transition: opacity .2s; cursor: pointer; border: none;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-secondary {
+    padding: 16px 36px;
+    background: transparent;
+    color: var(--dourado); font-family: 'Space Mono', monospace;
+    font-size: 13px; letter-spacing: 1px;
+    border: 1px solid var(--dourado); border-radius: 4px;
+    transition: all .2s;
+  }
+  .btn-secondary:hover { background: rgba(212,175,55,0.1); }
+
+  .hero-stats {
+    display: flex; gap: 48px; margin-top: 80px;
+    flex-wrap: wrap; justify-content: center;
+  }
+
+  .hero-stat { text-align: center; }
+  .hero-stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--dourado); line-height: 1; }
+  .hero-stat-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-muted); margin-top: 4px; }
+
+  /* SECTIONS */
+  section { max-width: 1100px; margin: 0 auto; padding: 96px 24px; }
+
+  .section-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px;
+    letter-spacing: 4px; text-transform: uppercase; color: var(--dourado); margin-bottom: 16px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,8vw,80px);
+    line-height: 0.95; color: var(--creme); margin-bottom: 24px; }
+  .section-title span { color: var(--dourado); }
+  .section-body { font-size: 18px; color: var(--texto-muted); line-height: 1.7;
+    max-width: 680px; margin-bottom: 56px; }
+
+  .divider { border: none; border-top: 1px solid var(--borda); max-width: 1100px; margin: 0 auto; }
+
+  /* ORIGIN STORY */
+  .origin-box {
+    background: var(--fundo-card);
+    border: 1px solid var(--borda); border-radius: 8px;
+    padding: 48px; position: relative; overflow: hidden;
+  }
+  .origin-box::before {
+    content: '"'; font-family: 'Bebas Neue', sans-serif;
+    font-size: 300px; color: var(--dourado); opacity: 0.05;
+    position: absolute; top: -60px; left: 20px; line-height: 1;
+  }
+  .origin-quote { font-size: clamp(20px,3vw,28px); font-style: italic;
+    color: var(--creme); line-height: 1.5; margin-bottom: 16px; position: relative; }
+  .origin-quote em { color: var(--dourado); font-style: normal; }
+  .origin-context { font-size: 15px; color: var(--texto-muted); line-height: 1.7; }
+
+  /* VOTE SECTION */
+  .vote-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 24px; margin-bottom: 48px; }
+  .vote-card { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 8px; padding: 32px; }
+  .vote-card-icon { font-size: 40px; margin-bottom: 16px; }
+  .vote-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--creme); margin-bottom: 8px; }
+  .vote-card p { font-size: 14px; color: var(--texto-muted); line-height: 1.6; }
+
+  /* COMPARISON TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 48px; }
+  .compare-table th {
+    padding: 14px 20px; font-family: 'Space Mono', monospace; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--texto-muted);
+    border-bottom: 1px solid var(--borda); text-align: left;
+  }
+  .compare-table th:last-child { color: var(--dourado); }
+  .compare-table td { padding: 16px 20px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .compare-table td:first-child { color: var(--texto-muted); }
+  .compare-table td:nth-child(2) { color: var(--vermelho); }
+  .compare-table td:last-child { color: var(--verde); }
+
+  /* PROTOCOL */
+  .code-box {
+    background: #0D0900; border: 1px solid var(--borda); border-radius: 6px;
+    padding: 24px 28px; font-family: 'Space Mono', monospace; font-size: 14px;
+    color: var(--dourado); margin: 24px 0; overflow-x: auto;
+  }
+  .code-comment { color: var(--texto-muted); }
+
+  /* SPECS */
+  .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 2px; }
+  .spec-item { background: var(--fundo-card); padding: 24px; }
+  .spec-label { font-family: 'Space Mono', monospace; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--texto-muted); margin-bottom: 8px; }
+  .spec-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--dourado); }
+  .spec-sub { font-size: 12px; color: var(--texto-muted); margin-top: 4px; }
+
+  /* DOWNLOAD */
+  .download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 24px; }
+  .download-card {
+    background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 8px;
+    padding: 32px; text-align: center; transition: border-color .2s; display: block;
+  }
+  .download-card:hover { border-color: var(--dourado); }
+  .download-icon { font-size: 48px; margin-bottom: 16px; }
+  .download-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--creme); margin-bottom: 8px; }
+  .download-card p { font-size: 13px; color: var(--texto-muted); line-height: 1.6; margin-bottom: 16px; }
+  .download-badge { font-family: 'Space Mono', monospace; font-size: 11px;
+    color: var(--dourado); border: 1px solid var(--borda); padding: 4px 12px; border-radius: 20px; }
+
+  /* MINING */
+  .mining-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 24px; }
+  .mining-step { display: flex; gap: 20px; }
+  .step-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px;
+    color: var(--dourado); opacity: 0.4; line-height: 1; flex-shrink: 0; }
+  .step-content h4 { font-size: 16px; font-weight: 700; color: var(--creme); margin-bottom: 6px; }
+  .step-content p { font-size: 14px; color: var(--texto-muted); line-height: 1.6; }
+
+  /* FOOTER */
+  footer { background: var(--fundo-card); border-top: 1px solid var(--borda);
+    padding: 48px 32px; text-align: center; }
+  footer p { font-size: 13px; color: var(--texto-muted); line-height: 1.8; }
+  footer a { color: var(--dourado); }
+
+  @media(max-width:640px){
+    .nav-links { display: none; }
+    nav { padding: 16px; }
+    .hero-stats { gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🐴 MULACOIN</div>
+  <ul class="nav-links">
+    <li><a href="#voting">Voting</a></li>
+    <li><a href="#specs">Specs</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="/vote.html">🗳️ Vote Now</a></li>
+    <li><a href="/explorer.html">⛓️ Explorer</a></li>
+  </ul>
+  <a class="nav-lang" href="/">🇧🇷 PT</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Brazilian Blockchain · Decentralized Voting · Open Source</p>
+  <h1>MULA<br>COIN</h1>
+  <p class="hero-sub">
+    A <strong>Brazilian meme coin</strong> forked from Dogecoin with a
+    <strong>real decentralized voting system</strong> built directly on the blockchain.
+    Every vote is permanently recorded, publicly auditable, and mathematically fraud-proof.
+  </p>
+  <div class="hero-btns">
+    <a href="/en/vote.html" class="btn-primary">🗳️ VOTE NOW</a>
+    <a href="#download" class="btn-secondary">⬇️ Download Wallet</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value" id="heroBlocks">55K+</div>
+      <div class="hero-stat-label">Blocks Mined</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">13</div>
+      <div class="hero-stat-label">FazoL / Block</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">~1min</div>
+      <div class="hero-stat-label">Block Time</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value" id="heroVotes">—</div>
+      <div class="hero-stat-label">Votes on Chain</div>
+    </div>
+  </div>
+</div>
+
+<!-- ORIGIN -->
+<section>
+  <p class="section-eyebrow">The origin story</p>
+  <h2 class="section-title">BORN FROM A<br><span>BROKEN PROMISE</span></h2>
+  <div class="origin-box">
+    <p class="origin-quote">
+      "Under my government, the poor will eat <em>picanha</em> (premium steak) again."
+    </p>
+    <p class="origin-context">
+      In 2022, a Brazilian presidential candidate made this promise to millions of voters.
+      He won the election. Four years later, premium steak costs R$80/kg — roughly $15 USD.
+      The poor still can't afford it. The promise became a meme. The meme became a blockchain.<br><br>
+      The ticker is <strong style="color:var(--dourado)">FazoL</strong> — a play on the Portuguese word
+      for "string bean" (feijão), a humble staple food of the poor, combined with the letter
+      <strong style="color:var(--dourado)">L</strong> from the candidate's name and the gesture
+      that became iconic in Brazilian politics.<br><br>
+      Each block mined rewards <strong style="color:var(--dourado)">13 FazoL</strong>.
+      Coincidentally — or not — 13 is the number of his political party.
+      Every block is a gentle reminder.
+    </p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- VOTING SYSTEM -->
+<section id="voting">
+  <p class="section-eyebrow">Decentralized democracy</p>
+  <h2 class="section-title">BLOCKCHAIN<br><span>VOTING SYSTEM</span></h2>
+  <p class="section-body">
+    Beyond the meme, Mulacoin includes a real voting system recorded directly on the blockchain
+    via OP_RETURN transactions. Transparent, immutable, and auditable by anyone in the world.
+  </p>
+
+  <div class="vote-grid">
+    <div class="vote-card">
+      <div class="vote-card-icon">🔒</div>
+      <h3>Immutable</h3>
+      <p>Votes are permanently recorded on the blockchain. Impossible to alter or delete after confirmation.</p>
+    </div>
+    <div class="vote-card">
+      <div class="vote-card-icon">🔍</div>
+      <h3>Auditable</h3>
+      <p>Anyone with the Mulacoin wallet and txindex=1 can independently verify every single vote.</p>
+    </div>
+    <div class="vote-card">
+      <div class="vote-card-icon">🗳️</div>
+      <h3>1 Address = 1 Vote</h3>
+      <p>Each blockchain address can vote once per topic. Duplicate votes are automatically ignored by the protocol.</p>
+    </div>
+    <div class="vote-card">
+      <div class="vote-card-icon">⚡</div>
+      <h3>Real-Time Results</h3>
+      <p>Results update automatically with each new block mined — approximately every minute.</p>
+    </div>
+  </div>
+
+  <!-- PROTOCOL -->
+  <p class="section-eyebrow" style="margin-top:48px">MVOTE Protocol</p>
+  <div class="code-box">
+    <span class="code-comment"># Creating a voting topic</span><br>
+    MVOTE:1:CREATE:TOPIC_ID:title:option1|option2|option3:deadline<br><br>
+    <span class="code-comment"># Casting a vote</span><br>
+    MVOTE:1:VOTE:TOPIC_ID:chosen_option<br><br>
+    <span class="code-comment"># Rule: first vote per address = valid | subsequent votes = ignored</span>
+  </div>
+
+  <!-- COMPARISON -->
+  <p class="section-eyebrow" style="margin-top:48px">Why it matters</p>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Traditional Election</th>
+        <th>Mulacoin Vote ✅</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Vote confirmation</td>
+        <td>❌ You can't verify your vote was counted</td>
+        <td>✅ TX confirmed = vote recorded forever</td>
+      </tr>
+      <tr>
+        <td>Audit access</td>
+        <td>❌ Restricted to authorized experts</td>
+        <td>✅ Anyone can audit independently</td>
+      </tr>
+      <tr>
+        <td>Result integrity</td>
+        <td>❌ Can be contested or disputed</td>
+        <td>✅ Blockchain is mathematically immutable</td>
+      </tr>
+      <tr>
+        <td>Duplicate votes</td>
+        <td>❌ Hidden fraud, hard to detect</td>
+        <td>✅ Visible on-chain and automatically ignored</td>
+      </tr>
+      <tr>
+        <td>Transparency</td>
+        <td>❌ Closed process</td>
+        <td>✅ 100% public and verifiable</td>
+      </tr>
+      <tr>
+        <td>Historical record</td>
+        <td>❌ Data can be altered</td>
+        <td>✅ Immutable forever</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="text-align:center;">
+    <a href="/vote.html" class="btn-primary" style="display:inline-block;">
+      🗳️ SEE ACTIVE VOTES & RESULTS
+    </a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SPECS -->
+<section id="specs">
+  <p class="section-eyebrow">Technical specifications</p>
+  <h2 class="section-title">BUILT ON<br><span>SOLID TECH</span></h2>
+  <p class="section-body">
+    Mulacoin is a serious fork of Dogecoin Core — battle-tested, Scrypt PoW,
+    CPU-minable by anyone with a standard computer.
+  </p>
+  <div class="specs-grid">
+    <div class="spec-item">
+      <div class="spec-label">Ticker</div>
+      <div class="spec-value">FazoL</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-label">Algorithm</div>
+      <div class="spec-value">Scrypt</div>
+      <div class="spec-sub">Proof of Work — CPU friendly</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-label">Block Reward</div>
+      <div class="spec-value">13 FazoL</div>
+      <div class="spec-sub">Fixed — no halving</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-label">Block Time</div>
+      <div class="spec-value">~1 min</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-label">Address Prefix</div>
+      <div class="spec-value">"M"</div>
+      <div class="spec-sub">as in Mulacoin</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-label">P2P Port</div>
+      <div class="spec-value">23556</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-label">DNS Seed</div>
+      <div class="spec-value" style="font-size:18px">seed.mulacoin.com.br</div>
+    </div>
+    <div class="spec-item">
+      <div class="spec-label">Codebase</div>
+      <div class="spec-value" style="font-size:18px">Dogecoin 1.14</div>
+      <div class="spec-sub">MIT License</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <p class="section-eyebrow">Get started</p>
+  <h2 class="section-title">DOWNLOAD<br><span>& START</span></h2>
+  <p class="section-body">
+    Each package includes the wallet, node, CLI, and a graphical voting interface.
+    Just extract and run the startup script — no configuration needed.
+  </p>
+  <div class="download-grid">
+    <a href="https://github.com/mauricioalldesc-source/mulacoin/releases/tag/v1.0.0"
+       class="download-card" target="_blank">
+      <div class="download-icon">🐧</div>
+      <h3>Linux — Full Package</h3>
+      <p>Includes wallet, node, CLI and graphical voting interface. Run <strong>iniciar-mulacoin.sh</strong> to start.</p>
+      <span class="download-badge">x86_64 · Ubuntu 24.04+</span>
+    </a>
+    <a href="https://github.com/mauricioalldesc-source/mulacoin/releases/tag/v1.0.0"
+       class="download-card" target="_blank">
+      <div class="download-icon">🪟</div>
+      <h3>Windows — Full Package</h3>
+      <p>Includes wallet, node, CLI and graphical voting interface. Run <strong>Iniciar-Mulacoin.bat</strong> to start.</p>
+      <span class="download-badge">x64 · Win 10/11</span>
+    </a>
+    <a href="https://github.com/mauricioalldesc-source/mulacoin"
+       class="download-card" target="_blank">
+      <div class="download-icon">📦</div>
+      <h3>Source Code</h3>
+      <p>Full Dogecoin Core fork available on GitHub. Compile it yourself, audit the code, contribute.</p>
+      <span class="download-badge">GitHub · MIT License</span>
+    </a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- MINING -->
+<section>
+  <p class="section-eyebrow">CPU Mining</p>
+  <h2 class="section-title">MINE WITH<br><span>ANY CPU</span></h2>
+  <p class="section-body">
+    No GPU needed. No ASIC. Any standard computer can mine Mulacoin and earn FazoL.
+  </p>
+  <div class="mining-steps">
+    <div class="mining-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Install cpuminer</h4>
+        <p>Clone and compile pooler's cpuminer from GitHub — the standard CPU mining software.</p>
+      </div>
+    </div>
+    <div class="mining-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Open your wallet</h4>
+        <p>Start Mulacoin with <code style="color:var(--dourado)">-server=1</code> and create a receiving address starting with "M".</p>
+      </div>
+    </div>
+    <div class="mining-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Start mining</h4>
+        <p>Run minerd pointing to your local node and collect 13 FazoL per block you find.</p>
+      </div>
+    </div>
+  </div>
+  <div class="code-box" style="margin-top:32px">
+    ./minerd -a scrypt -o http://127.0.0.1:23560 \<br>
+    &nbsp;&nbsp;-u YOUR_USER -p YOUR_PASS \<br>
+    &nbsp;&nbsp;--coinbase-addr=YOUR_M_ADDRESS -t 2
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LINKS -->
+<section style="text-align:center; padding:64px 24px;">
+  <p class="section-eyebrow">Ecosystem</p>
+  <h2 class="section-title" style="margin-bottom:48px;">EXPLORE<br><span>MULACOIN</span></h2>
+  <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center;">
+    <a href="/vote.html" class="btn-primary">🗳️ Vote Now</a>
+    <a href="/explorer.html" class="btn-secondary">⛓️ Blockchain Explorer</a>
+    <a href="https://github.com/mauricioalldesc-source/mulacoin" class="btn-secondary" target="_blank">💻 GitHub</a>
+    <a href="/" class="btn-secondary">🇧🇷 Versão em Português</a>
+  </div>
+</section>
+
+<footer>
+  <p>
+    🐴 <strong style="color:var(--dourado)">MULACOIN (FazoL)</strong> — The Brazilian Blockchain<br>
+    <a href="https://mulacoin.com.br">mulacoin.com.br</a> ·
+    <a href="/vote.html">Vote</a> ·
+    <a href="/explorer.html">Explorer</a> ·
+    <a href="https://github.com/mauricioalldesc-source/mulacoin">GitHub</a><br><br>
+    <span style="font-size:12px;">
+      Mulacoin is a political humor and cultural project. Not an investment.
+      No financial returns promised. No steak promised either.<br>
+      Any resemblance to electoral campaign promises is entirely intentional and ironic.
+    </span>
+  </p>
+</footer>
+
+<script>
+  // Carregar stats da API
+  fetch('https://vote.mulacoin.com.br/status')
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('heroBlocks').textContent =
+        data.blocos.toLocaleString('en-US');
+    }).catch(() => {});
+
+  fetch('https://vote.mulacoin.com.br/temas')
+    .then(r => r.json())
+    .then(temas => {
+      const total = temas.reduce((a, t) => a + t.total, 0);
+      document.getElementById('heroVotes').textContent = total;
+    }).catch(() => {});
+</script>
+</body>
+</html>
