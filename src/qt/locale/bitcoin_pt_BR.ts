@@ -408,11 +408,11 @@
     </message>
     <message>
         <source>&amp;Such Send</source>
-        <translation>&amp;Enviar</translation>
+        <translation>&amp;Picanha Enviada</translation>
     </message>
     <message>
         <source>&amp;Much Receive</source>
-        <translation>&amp;Receber</translation>
+        <translation>&amp;Picanha Recebida</translation>
     </message>
     <message>
         <source>&amp;Show / Hide</source>

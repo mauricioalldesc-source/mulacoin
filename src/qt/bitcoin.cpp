@@ -47,6 +47,11 @@
 #include <QDebug>
 #include <QLibraryInfo>
 #include <QLocale>
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLabel>
 #include <QMessageBox>
 #include <QSettings>
 #include <QThread>
@@ -564,6 +569,71 @@ MAIN_FUNCTION
         HelpMessageDialog help(NULL, IsArgSet("-version"));
         help.showOrPrint();
         return EXIT_SUCCESS;
+    }
+
+    /// 4b. First run: ask user to select language
+    {
+        QSettings settings;
+        if (!settings.contains("language") || settings.value("language").toString().isEmpty()) {
+            // Primeira execução — mostrar seletor de idioma
+            QDialog langDialog;
+            langDialog.setWindowTitle("Mulacoin — Language / Idioma");
+            langDialog.setFixedSize(420, 280);
+            langDialog.setStyleSheet(
+                "QDialog { background-color: #1A1208; color: #F5EDD6; }"
+                "QLabel { color: #F5EDD6; }"
+                "QPushButton { background: #241A0E; color: #D4AF37; border: 1px solid #D4AF37;"
+                "  padding: 12px 24px; font-size: 14px; border-radius: 4px; }"
+                "QPushButton:hover { background: #3D2800; }"
+            );
+
+            QVBoxLayout *layout = new QVBoxLayout(&langDialog);
+            layout->setSpacing(16);
+            layout->setContentsMargins(32, 32, 32, 32);
+
+            QLabel *title = new QLabel("🐴 MULACOIN");
+            title->setAlignment(Qt::AlignCenter);
+            title->setStyleSheet("font-size: 28px; font-weight: bold; color: #D4AF37; margin-bottom: 8px;");
+            layout->addWidget(title);
+
+            QLabel *subtitle = new QLabel("Select your language / Selecione seu idioma");
+            subtitle->setAlignment(Qt::AlignCenter);
+            subtitle->setStyleSheet("font-size: 13px; color: #A89070; margin-bottom: 16px;");
+            layout->addWidget(subtitle);
+
+            QHBoxLayout *btnLayout = new QHBoxLayout();
+            btnLayout->setSpacing(16);
+
+            QPushButton *btnPT = new QPushButton("🇧🇷  Português (BR)");
+            QPushButton *btnEN = new QPushButton("🇺🇸  English");
+
+            btnLayout->addWidget(btnPT);
+            btnLayout->addWidget(btnEN);
+            layout->addLayout(btnLayout);
+
+            QLabel *note = new QLabel("This can be changed later in Settings / Pode ser alterado em Configurações");
+            note->setAlignment(Qt::AlignCenter);
+            note->setStyleSheet("font-size: 11px; color: #5C4A3A; margin-top: 8px;");
+            layout->addWidget(note);
+
+            QString selectedLang = "pt_BR";
+            QObject::connect(btnPT, &QPushButton::clicked, [&]() {
+                selectedLang = "pt_BR";
+                langDialog.accept();
+            });
+            QObject::connect(btnEN, &QPushButton::clicked, [&]() {
+                selectedLang = "en";
+                langDialog.accept();
+            });
+
+            langDialog.exec();
+
+            // Salvar idioma selecionado
+            settings.setValue("language", selectedLang);
+
+            // Recarregar traduções com o idioma escolhido
+            initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
+        }
     }
 
     /// 5. Now that settings and translations are available, ask user for data directory
