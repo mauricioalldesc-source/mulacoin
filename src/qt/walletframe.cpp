@@ -4,6 +4,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletframe.h"
+#include "wallet/wallet.h"
+#include "walletmodel.h"
+#include "walletview.h"
 
 #include "bitcoingui.h"
 #include "walletview.h"
@@ -206,6 +209,14 @@ void WalletFrame::usedReceivingAddresses()
     WalletView *walletView = currentWalletView();
     if (walletView)
         walletView->usedReceivingAddresses();
+}
+
+CWallet *WalletFrame::getCurrentWallet() const
+{
+    WalletView *view = const_cast<WalletFrame*>(this)->currentWalletView();
+    if (view && view->walletModel)
+        return view->walletModel->getWallet();
+    return nullptr;
 }
 
 WalletView *WalletFrame::currentWalletView()

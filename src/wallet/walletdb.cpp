@@ -182,6 +182,21 @@ bool CWalletDB::WriteMinVersion(int nVersion)
     return Write(std::string("minversion"), nVersion);
 }
 
+bool CWalletDB::Write2FASecret(const std::string& secret)
+{
+    return Write(std::string("2fasecret"), secret, true);
+}
+
+bool CWalletDB::Read2FASecret(std::string& secret)
+{
+    return Read(std::string("2fasecret"), secret);
+}
+
+bool CWalletDB::Erase2FASecret()
+{
+    return Erase(std::string("2fasecret"));
+}
+
 bool CWalletDB::ReadAccount(const string& strAccount, CAccount& account)
 {
     account.SetNull();

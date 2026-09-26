@@ -8,6 +8,7 @@
 #endif
 
 #include "bitcoingui.h"
+#include "twofactordialog.h"
 
 #include "bitcoinunits.h"
 #include "clientmodel.h"
@@ -25,6 +26,9 @@
 
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
+#include "walletview.h"
+#include "wallet/walletdb.h"
+#include "wallet/wallet.h"
 #include "walletmodel.h"
 #endif // ENABLE_WALLET
 
@@ -109,6 +113,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     encryptWalletAction(0),
     backupWalletAction(0),
     changePassphraseAction(0),
+    twoFactorAction(0),
     aboutQtAction(0),
     openRPCConsoleAction(0),
     openAction(0),
@@ -369,6 +374,9 @@ void BitcoinGUI::createActions()
     backupWalletAction->setStatusTip(tr("Backup wallet to another location"));
     changePassphraseAction = new QAction(platformStyle->TextColorIcon(":/icons/key"), tr("&Change Passphrase..."), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
+
+    twoFactorAction = new QAction(platformStyle->TextColorIcon(":/icons/key"), tr("&Two-Factor Authentication (2FA)..."), this);
+    twoFactorAction->setStatusTip(tr("Configure two-factor authentication for sending coins"));
     signMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/edit"), tr("Sign &message..."), this);
     signMessageAction->setStatusTip(tr("Sign messages with your Mulacoin addresses to prove you own them"));
     verifyMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/verify"), tr("&Verify message..."), this);
@@ -412,6 +420,7 @@ void BitcoinGUI::createActions()
         connect(encryptWalletAction, SIGNAL(triggered(bool)), walletFrame, SLOT(encryptWallet(bool)));
         connect(backupWalletAction, SIGNAL(triggered()), walletFrame, SLOT(backupWallet()));
         connect(changePassphraseAction, SIGNAL(triggered()), walletFrame, SLOT(changePassphrase()));
+        connect(twoFactorAction, SIGNAL(triggered()), this, SLOT(configureTwoFactor()));
         connect(signMessageAction, SIGNAL(triggered()), this, SLOT(gotoSignMessageTab()));
         connect(verifyMessageAction, SIGNAL(triggered()), this, SLOT(gotoVerifyMessageTab()));
         connect(usedSendingAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(usedSendingAddresses()));
@@ -458,6 +467,7 @@ void BitcoinGUI::createMenuBar()
     {
         settings->addAction(encryptWalletAction);
         settings->addAction(changePassphraseAction);
+        settings->addAction(twoFactorAction);
         settings->addSeparator();
     }
     settings->addAction(optionsAction);
@@ -1141,6 +1151,63 @@ void BitcoinGUI::detectShutdown()
             rpcConsole->hide();
         qApp->quit();
     }
+}
+
+void BitcoinGUI::configureTwoFactor()
+{
+    // Obter wallet através do walletFrame
+    CWallet *pWallet = nullptr;
+    if (walletFrame)
+        pWallet = walletFrame->getCurrentWallet();
+
+    // Verificar se 2FA já está configurado no wallet.dat
+    std::string secret2fa;
+    if (pWallet) {
+        CWalletDB walletdb(pWallet->strWalletFile);
+        walletdb.Read2FASecret(secret2fa);
+    }
+    QString secret = QString::fromStdString(secret2fa);
+
+    if (!secret.isEmpty()) {
+        // 2FA já configurado — perguntar se quer reconfigurar ou remover
+        QMessageBox::StandardButton reply = QMessageBox::question(this,
+            tr("Two-Factor Authentication"),
+            tr("2FA is already configured.\n\nWhat would you like to do?"),
+            QMessageBox::Reset | QMessageBox::Cancel,
+            QMessageBox::Cancel);
+
+        if (reply == QMessageBox::Reset) {
+            QMessageBox::StandardButton confirm = QMessageBox::question(this,
+                tr("Remove 2FA"),
+                tr("Are you sure you want to remove two-factor authentication?\n\n"
+                   "⚠️ Your wallet will be less protected!"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+            if (confirm == QMessageBox::Yes) {
+                // Exigir código 2FA antes de desabilitar
+                TwoFactorDialog verifyDlg(pWallet, this);
+                verifyDlg.exec();
+                if (!verifyDlg.wasAccepted()) {
+                    QMessageBox::warning(this, tr("2FA Required"),
+                        tr("You must enter a valid 2FA code to disable two-factor authentication."));
+                    return;
+                }
+                if (pWallet) {
+                    CWalletDB walletdb(pWallet->strWalletFile);
+                    walletdb.Erase2FASecret();
+                }
+                QSettings settings;
+                settings.remove("2fa_secret");
+                QMessageBox::information(this, tr("2FA Removed"),
+                    tr("Two-factor authentication has been removed."));
+            }
+        }
+        return;
+    }
+
+    // 2FA não configurado — abrir dialog de configuração
+    TwoFactorSetupDialog setupDlg(pWallet, this);
+    setupDlg.exec();
 }
 
 void BitcoinGUI::showProgress(const QString &title, int nProgress)

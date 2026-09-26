@@ -4,6 +4,10 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "sendcoinsdialog.h"
+#include "twofactordialog.h"
+#include <QSettings>
+#include "wallet/walletdb.h"
+#include "wallet/wallet.h"
 #include "ui_sendcoinsdialog.h"
 
 #include "addresstablemodel.h"

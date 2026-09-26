@@ -58,7 +58,9 @@ public:
 
 private:
     ClientModel *clientModel;
+public:
     WalletModel *walletModel;
+private:
 
     OverviewPage *overviewPage;
     QWidget *transactionsPage;

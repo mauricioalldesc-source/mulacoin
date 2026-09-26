@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QSemaphore>
 
 class AddressTableModel;
 class OptionsModel;
@@ -205,6 +206,8 @@ public:
 
 private:
     CWallet *wallet;
+public:
+    CWallet *getWallet() const { return wallet; }
     bool fHaveWatchOnly;
     bool fForceCheckBalanceChanged;
 
@@ -259,6 +262,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     /* Wallet status might have changed */
+    void verify2FADialog(bool *fApproved, QSemaphore *sem);
     void updateStatus();
     /* New transaction, or transaction changed status */
     void updateTransaction();

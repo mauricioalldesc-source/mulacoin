@@ -143,7 +143,8 @@ QT_MOC_CPP = \
   qt/moc_verticallabel.cpp \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
-  qt/moc_walletview.cpp
+  qt/moc_walletview.cpp \
+  qt/moc_twofactordialog.cpp
 
 BITCOIN_MM = \
   qt/macdockiconhandler.mm \
@@ -216,6 +217,8 @@ BITCOIN_QT_H = \
   qt/walletmodel.h \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
+  qt/totp.h \
+  qt/twofactordialog.h \
   qt/winshutdownmonitor.h
 
 RES_ICONS = \
@@ -278,6 +281,8 @@ RES_ICONS = \
   qt/res/icons/warning.png \
   qt/res/icons/verify.png
 
+BITCOIN_QT_TOTP_CPP =   qt/totp.cpp   qt/twofactordialog.cpp
+
 BITCOIN_QT_BASE_CPP = \
   qt/bantablemodel.cpp \
   qt/bitcoinaddressvalidator.cpp \
@@ -335,7 +340,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/walletmodeltransaction.cpp \
   qt/walletview.cpp
 
-BITCOIN_QT_CPP = $(BITCOIN_QT_BASE_CPP)
+BITCOIN_QT_CPP = $(BITCOIN_QT_BASE_CPP) $(BITCOIN_QT_TOTP_CPP)
 if TARGET_WINDOWS
 # BITCOIN_QT_CPP += $(BITCOIN_QT_WINDOWS_CPP) # Disabled: MinGW 13 compatibility issue
 endif
@@ -388,7 +393,7 @@ qt_dogecoin_qt_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUD
   $(QT_INCLUDES) $(QR_CFLAGS)
 qt_dogecoin_qt_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
 
-qt_dogecoin_qt_SOURCES = qt/bitcoin.cpp
+qt_dogecoin_qt_SOURCES = qt/bitcoin.cpp qt/totp.cpp qt/twofactordialog.cpp
 if TARGET_DARWIN
   qt_dogecoin_qt_SOURCES += $(BITCOIN_MM)
 endif
@@ -405,6 +410,7 @@ endif
 qt_dogecoin_qt_LDADD += $(LIBDOGECOIN_CLI) $(LIBDOGECOIN_COMMON) $(LIBDOGECOIN_UTIL) $(LIBDOGECOIN_CONSENSUS) $(LIBDOGECOIN_CRYPTO) $(LIBUNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
   $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) \
   $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)
+qt_dogecoin_qt_LDADD += -lqrencode
 qt_dogecoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 qt_dogecoin_qt_LIBTOOLFLAGS = --tag CXX
 

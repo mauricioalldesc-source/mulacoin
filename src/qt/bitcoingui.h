@@ -112,6 +112,7 @@ private:
     QAction *encryptWalletAction;
     QAction *backupWalletAction;
     QAction *changePassphraseAction;
+    QAction *twoFactorAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
     QAction *openAction;
@@ -212,6 +213,8 @@ private Q_SLOTS:
 
     /** Show open dialog */
     void openClicked();
+    /** Configure Two-Factor Authentication */
+    void configureTwoFactor();
 #endif // ENABLE_WALLET
     /** Show configuration dialog */
     void optionsClicked();

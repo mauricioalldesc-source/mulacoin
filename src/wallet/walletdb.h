@@ -151,6 +151,11 @@ public:
 
     bool WriteMinVersion(int nVersion);
 
+    // Two-Factor Authentication (2FA)
+    bool Write2FASecret(const std::string& secret);
+    bool Read2FASecret(std::string& secret);
+    bool Erase2FASecret();
+
     /// This writes directly to the database, and will not update the CWallet's cached accounting entries!
     /// Use wallet.AddAccountingEntry instead, to write *and* update its caches.
     bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);

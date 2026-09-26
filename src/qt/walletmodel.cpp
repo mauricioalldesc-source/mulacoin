@@ -4,6 +4,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletmodel.h"
+#include "twofactordialog.h"
+#include "wallet/walletdb.h"
+#include <QSemaphore>
 
 #include "addresstablemodel.h"
 #include "consensus/validation.h"
@@ -196,6 +199,20 @@ bool WalletModel::validateAddress(const QString &address)
 
 WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransaction &transaction, const CCoinControl *coinControl)
 {
+    // 2FA verification — runs on UI thread, no deadlock possible
+    std::string secret;
+    {
+        CWalletDB walletdb(wallet->strWalletFile);
+        walletdb.Read2FASecret(secret);
+    }
+    if (!secret.empty()) {
+        TwoFactorDialog dlg(wallet, nullptr);
+        dlg.exec();
+        if (!dlg.wasAccepted()) {
+            return SendCoinsReturn(TransactionCreationFailed);
+        }
+    }
+
     CAmount total = 0;
     bool fSubtractFeeFromAmount = false;
     QList<SendCoinsRecipient> recipients = transaction.getRecipients();
@@ -504,6 +521,14 @@ void WalletModel::unsubscribeFromCoreSignals()
                                                 boost::placeholders::_2));
     wallet->NotifyWatchonlyChanged.disconnect(boost::bind(NotifyWatchonlyChanged, this,
                                                           boost::placeholders::_1));
+}
+
+void WalletModel::verify2FADialog(bool *fApproved, QSemaphore *sem)
+{
+    TwoFactorDialog dlg(wallet, nullptr);
+    dlg.exec();
+    *fApproved = dlg.wasAccepted();
+    sem->release();
 }
 
 // WalletModel::UnlockContext implementation

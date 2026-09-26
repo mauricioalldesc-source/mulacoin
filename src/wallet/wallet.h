@@ -930,6 +930,13 @@ public:
     /** Watch-only address added */
     boost::signals2::signal<void (bool fHaveWatchOnly)> NotifyWatchonlyChanged;
 
+    /**
+     * 2FA verification hook — called before committing a transaction.
+     * Handlers should set the bool to false to abort the transaction.
+     * @note called WITHOUT wallet lock held.
+     */
+    boost::signals2::signal<void (bool *fApproved)> Verify2FA;
+
     /** Inquire whether this wallet broadcasts transactions. */
     bool GetBroadcastTransactions() const { return fBroadcastTransactions; }
     /** Set whether this wallet broadcasts transactions. */
