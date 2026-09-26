@@ -1,12 +1,13 @@
 package=qrencode
-$(package)_version=3.4.4
-$(package)_download_path=http://archive.ubuntu.com/ubuntu/pool/universe/q/qrencode/
-$(package)_file_name=qrencode-$(qrencode_version).tar.bz2
-$(package)_sha256_hash=efe5188b1ddbcbf98763b819b146be6a90481aac30cfc8d858ab78a19cde1fa5
+$(package)_version=4.1.1
+$(package)_download_path=https://github.com/fukuchi/libqrencode/archive/refs/tags/
+$(package)_file_name=v$($(package)_version).tar.gz
+$(package)_sha256_hash=5385bc1b8c2f20f3b91d258bf8ccc8cf62023935df2d2676b5b67049f31a049c
 
 define $(package)_set_vars
-$(package)_config_opts=--disable-shared -without-tools --disable-sdltest
+$(package)_config_opts=--disable-shared --without-tools --disable-sdltest
 $(package)_config_opts_linux=--with-pic
+$(package)_config_opts_mingw32=--with-pic
 endef
 
 define $(package)_config_cmds
