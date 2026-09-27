@@ -37,10 +37,12 @@ jobs:
           echo "OpenSSL: ${HASH}"
 
           # Berkeley DB 5.3.28
-          wget -v "https://github.com/berkeleydb/libdb/releases/download/v5.3.28/db-5.3.28.tar.gz" -O depends/sources/db-5.3.28.NC.tar.gz || echo "ERRO wget BDB release"
-          ls -la depends/sources/db-5.3.28.NC.tar.gz || echo "ARQUIVO NAO EXISTE"
-          wget -v "https://github.com/berkeleydb/libdb/archive/refs/tags/v5.3.28.tar.gz" -O depends/sources/db-5.3.28.NC.tar.gz || echo "ERRO wget BDB archive" 
+          wget -q --no-check-certificate "https://github.com/berkeleydb/libdb/releases/download/v5.3.28/db-5.3.28.tar.gz" -O depends/sources/db-5.3.28.NC.tar.gz
+          if [ ! -s depends/sources/db-5.3.28.NC.tar.gz ]; then
+            wget -q --no-check-certificate "https://github.com/berkeleydb/libdb/archive/refs/tags/v5.3.28.tar.gz" -O depends/sources/db-5.3.28.NC.tar.gz
+          fi
           HASH=$(sha256sum depends/sources/db-5.3.28.NC.tar.gz | cut -d' ' -f1)
+          sed -i "s/bdb_sha256_hash=.*/bdb_sha256_hash=${HASH}/" depends/packages/bdb.mk
           echo "${HASH}  depends/sources/db-5.3.28.NC.tar.gz" > depends/sources/download-stamps/.stamp_fetched-bdb-db-5.3.28.NC.tar.gz.hash
           echo "BDB: ${HASH}"
 
