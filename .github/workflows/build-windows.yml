@@ -42,7 +42,7 @@ jobs:
             wget -q --no-check-certificate "https://github.com/berkeleydb/libdb/archive/refs/tags/v5.3.28.tar.gz" -O depends/sources/db-5.3.28.NC.tar.gz
           fi
           HASH=$(sha256sum depends/sources/db-5.3.28.NC.tar.gz | cut -d' ' -f1)
-          sed -i "s/bdb_sha256_hash=.*/bdb_sha256_hash=${HASH}/" depends/packages/bdb.mk
+          sed -i "5s/.*/\$(package)_sha256_hash=${HASH}/" depends/packages/bdb.mk
           echo "${HASH}  depends/sources/db-5.3.28.NC.tar.gz" > depends/sources/download-stamps/.stamp_fetched-bdb-db-5.3.28.NC.tar.gz.hash
           echo "BDB: ${HASH}"
 
