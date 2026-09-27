@@ -44,6 +44,13 @@ jobs:
           echo "${HASH}  depends/sources/db-5.3.28.NC.tar.gz" > depends/sources/download-stamps/.stamp_fetched-bdb-db-5.3.28.NC.tar.gz.hash
           echo "BDB: ${HASH}"
 
+          # qrencode 3.4.4
+          wget -q --no-check-certificate "https://github.com/fukuchi/libqrencode/releases/download/v3.4.4/qrencode-3.4.4.tar.bz2" -O depends/sources/qrencode-3.4.4.tar.bz2
+          HASH=$(sha256sum depends/sources/qrencode-3.4.4.tar.bz2 | cut -d' ' -f1)
+          sed -i "s/qrencode_sha256_hash=.*/qrencode_sha256_hash=${HASH}/" depends/packages/qrencode.mk
+          echo "${HASH}  depends/sources/qrencode-3.4.4.tar.bz2" > depends/sources/download-stamps/.stamp_fetched-qrencode-qrencode-3.4.4.tar.bz2.hash
+          echo "qrencode: ${HASH}"
+
           # zlib 1.3 (URL ja corrigida no zlib.mk para github)
           wget -q "https://github.com/madler/zlib/releases/download/v1.3/zlib-1.3.tar.gz" -O depends/sources/zlib-1.3.tar.gz
           HASH=$(sha256sum depends/sources/zlib-1.3.tar.gz | cut -d' ' -f1)
