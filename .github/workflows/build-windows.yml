@@ -47,10 +47,11 @@ jobs:
           echo "BDB: ${HASH}"
           echo "BDB hash atualizado no bdb.mk: $(grep sha256 depends/packages/bdb.mk)"
 
-          # qrencode 3.4.4 — usar apt para obter o source
-          apt-get download libqrencode-dev 2>/dev/null || true
-          # Baixar source via Ubuntu archive
-          curl -kL "http://archive.ubuntu.com/ubuntu/pool/universe/q/qrencode/qrencode_3.4.4.orig.tar.bz2" -o depends/sources/qrencode-3.4.4.tar.bz2 ||           curl -kL "https://fukuchi.org/works/qrencode/qrencode-3.4.4.tar.bz2" -o depends/sources/qrencode-3.4.4.tar.bz2
+          # qrencode 3.4.4
+          curl -kL "http://archive.ubuntu.com/ubuntu/pool/universe/q/qrencode/qrencode_3.4.4.orig.tar.bz2" -o depends/sources/qrencode-3.4.4.tar.bz2 2>/dev/null
+          if [ ! -s depends/sources/qrencode-3.4.4.tar.bz2 ]; then
+            wget -q "http://archive.ubuntu.com/ubuntu/pool/universe/q/qrencode/qrencode_3.4.4.orig.tar.bz2" -O depends/sources/qrencode-3.4.4.tar.bz2
+          fi
           HASH=$(sha256sum depends/sources/qrencode-3.4.4.tar.bz2 | cut -d' ' -f1)
           perl -i -pe "s/sha256_hash=.*/sha256_hash=${HASH}/" depends/packages/qrencode.mk
           echo "${HASH}  depends/sources/qrencode-3.4.4.tar.bz2" > depends/sources/download-stamps/.stamp_fetched-qrencode-qrencode-3.4.4.tar.bz2.hash
@@ -78,7 +79,7 @@ jobs:
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
           cd depends
-          make HOST=x86_64-w64-mingw32 -j2 build_DOWNLOAD="curl -kL --connect-timeout 10 -o"
+          make HOST=x86_64-w64-mingw32 -j2
 
       - name: Corrigir PROCESSOR_NUMBER no MinGW winbase.h
         run: sudo python3 fix_mingw.py
