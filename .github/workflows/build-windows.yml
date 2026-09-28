@@ -76,7 +76,7 @@ jobs:
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
           cd depends
-          make HOST=x86_64-w64-mingw32 -j2
+          make HOST=x86_64-w64-mingw32 -j2 build_DOWNLOAD="curl -kL --connect-timeout 10 -o"
 
       - name: Corrigir PROCESSOR_NUMBER no MinGW winbase.h
         run: sudo python3 fix_mingw.py
