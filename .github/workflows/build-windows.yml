@@ -47,8 +47,10 @@ jobs:
           echo "BDB: ${HASH}"
           echo "BDB hash atualizado no bdb.mk: $(grep sha256 depends/packages/bdb.mk)"
 
-          # qrencode 3.4.4
-          curl -kL "https://github.com/fukuchi/libqrencode/releases/download/v3.4.4/qrencode-3.4.4.tar.bz2" -o depends/sources/qrencode-3.4.4.tar.bz2 ||           curl -kL "https://web.archive.org/web/2023/https://github.com/fukuchi/libqrencode/releases/download/v3.4.4/qrencode-3.4.4.tar.bz2" -o depends/sources/qrencode-3.4.4.tar.bz2
+          # qrencode 3.4.4 — usar apt para obter o source
+          apt-get download libqrencode-dev 2>/dev/null || true
+          # Baixar source via Ubuntu archive
+          curl -kL "http://archive.ubuntu.com/ubuntu/pool/universe/q/qrencode/qrencode_3.4.4.orig.tar.bz2" -o depends/sources/qrencode-3.4.4.tar.bz2 ||           curl -kL "https://fukuchi.org/works/qrencode/qrencode-3.4.4.tar.bz2" -o depends/sources/qrencode-3.4.4.tar.bz2
           HASH=$(sha256sum depends/sources/qrencode-3.4.4.tar.bz2 | cut -d' ' -f1)
           perl -i -pe "s/sha256_hash=.*/sha256_hash=${HASH}/" depends/packages/qrencode.mk
           echo "${HASH}  depends/sources/qrencode-3.4.4.tar.bz2" > depends/sources/download-stamps/.stamp_fetched-qrencode-qrencode-3.4.4.tar.bz2.hash
