@@ -374,10 +374,10 @@
 
 <nav>
   <a class="nav-logo" href="/">🐴 MULACOIN</a>
-  <div style="display:flex; gap:24px; align-items:center;">
-    <a href="/" style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--texto-muted); text-decoration:none;">Início</a>
-    <a href="/explorer.html" style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--texto-muted); text-decoration:none;">⛓️ Explorer</a>
-  </div>
+  <ul class="nav-links" style="display:flex;gap:24px;list-style:none;align-items:center;">
+    <li><a href="/explorer.html" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8A7A5A;text-decoration:none;">⛓️ Explorer</a></li>
+    <li><a href="https://go.mulacoin.com.br" target="_blank" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8A7A5A;text-decoration:none;">🎮 GO</a></li>
+  </ul>
   <div class="nav-status">
     <div class="status-dot" id="statusDot"></div>
     <span id="statusText">Conectando...</span>
@@ -497,22 +497,21 @@
       <div class="step">
         <div class="step-num">1</div>
         <div>
-          <p><strong>Baixe o pacote completo Mulacoin</strong> para seu sistema operacional.</p>
-          <p>Download em <a href="https://mulacoin.com.br#download" style="color:var(--dourado)">mulacoin.com.br</a></p>
+          <p><strong>Baixe a carteira Mulacoin</strong> e sincronize com a rede.</p>
+          <p>Download em <a href="https://mulacoin.com.br" style="color:var(--dourado)">mulacoin.com.br</a></p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div>
-          <p><strong>Extraia o zip</strong> e execute o script de inicialização:</p>
-          <div class="code">🐧 Linux: ./iniciar-mulacoin.sh<br>🪟 Windows: Iniciar-Mulacoin.bat</div>
-          <p style="margin-top:8px; font-size:14px; color:var(--texto-muted)">A carteira e a interface de votação abrirão automaticamente.</p>
+          <p><strong>Baixe o script de votação</strong> e coloque na pasta da carteira.</p>
+          <div class="code">python3 mulacoin_vote.py votar ID_DO_TEMA "Sua Opção"</div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div>
-          <p><strong>Aguarde a carteira sincronizar</strong> com a rede Mulacoin. Na interface de votação, selecione o tema e sua opção e clique em <strong>"Registrar Voto na Blockchain"</strong>.</p>
+          <p><strong>Seu voto é registrado na blockchain</strong> — permanente, transparente e único por endereço. Aguarde ~1 minuto para confirmação.</p>
         </div>
       </div>
       <div class="step">
@@ -529,12 +528,14 @@
   <p>🐴 <strong style="color:var(--dourado)">Mulacoin Vote</strong> — Votações gravadas na blockchain Mulacoin</p>
   <p style="margin-top:8px">
     <a href="https://mulacoin.com.br">mulacoin.com.br</a> ·
+    <a href="/explorer.html">Explorer</a> ·
+    <a href="https://go.mulacoin.com.br" target="_blank">🎮 GO</a> ·
     <a href="https://github.com/mauricioalldesc-source/mulacoin">GitHub</a>
   </p>
 </footer>
 
 <script>
-  const API = 'https://vote.mulacoin.com.br';
+  const API = 'http://179.197.229.241:3200';
 
   // ── Status do node ──────────────────────────────────────────────────────────
   async function checkStatus() {

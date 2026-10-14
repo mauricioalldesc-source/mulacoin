@@ -662,6 +662,13 @@
     .nav-links { display: none; }
     nav { padding: 16px 24px; }
   }
+
+  /* ── VOTE/GO CARDS ── */
+  .vote-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 24px; margin-bottom: 48px; }
+  .vote-card { background: var(--fundo-card); border: 1px solid rgba(212,175,55,0.15); border-radius: 8px; padding: 32px; }
+  .vote-card-icon { font-size: 40px; margin-bottom: 16px; }
+  .vote-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--creme); margin-bottom: 8px; }
+  .vote-card p { font-size: 14px; color: var(--texto-muted); line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -675,9 +682,9 @@
     <li><a href="#download">Download</a></li>
     <li><a href="#minerar">Minerar</a></li>
     <li><a href="#specs">Specs</a></li>
-    <li><a href="/vote.html">🗳️ Votar</a></li>
-    <li><a href="/en/">🌐 English</a></li>
+    <li><a href="/vote.html">🗳️ Votação</a></li>
     <li><a href="/explorer.html">⛓️ Explorer</a></li>
+    <li><a href="https://go.mulacoin.com.br" target="_blank">🎮 GO</a></li>
   </ul>
 </nav>
 
@@ -848,16 +855,16 @@
   </p>
 
   <div class="download-grid">
-    <a href="https://github.com/mauricioalldesc-source/mulacoin/releases/tag/v1.0.0" class="download-card" target="_blank">
+    <a href="https://github.com/mauricioalldesc-source/mulacoin/releases" class="download-card" target="_blank">
       <div class="download-icon">🐧</div>
-      <h3>Linux — Pacote Completo</h3>
-      <p>Inclui carteira, node, CLI e interface gráfica de votação. Execute <strong>iniciar-mulacoin.sh</strong> para começar.</p>
-      <span class="download-badge">x86_64 · Ubuntu 24.04+</span>
+      <h3>Linux</h3>
+      <p>Ubuntu 24.04 LTS e derivados. Inclui mulacoind, mulacoin-cli, mulacoin-qt e mulacoin-tx.</p>
+      <span class="download-badge">x86_64 · glibc 2.39+</span>
     </a>
-    <a href="https://github.com/mauricioalldesc-source/mulacoin/releases/tag/v1.0.0" class="download-card" target="_blank">
+    <a href="https://github.com/mauricioalldesc-source/mulacoin/releases" class="download-card" target="_blank">
       <div class="download-icon">🪟</div>
-      <h3>Windows — Pacote Completo</h3>
-      <p>Inclui carteira, node, CLI e interface gráfica de votação. Clique em <strong>Iniciar-Mulacoin.bat</strong> para começar.</p>
+      <h3>Windows</h3>
+      <p>Windows 10/11 64-bit. Carteira gráfica completa. Inclui DLLs necessárias para rodar sem instalação.</p>
       <span class="download-badge">x64 · Win 10/11</span>
     </a>
     <a href="https://github.com/mauricioalldesc-source/mulacoin" class="download-card" target="_blank">
@@ -914,46 +921,6 @@
 
 <div class="divider"></div>
 
-<!-- VOTAÇÃO -->
-<section id="votacao">
-  <p class="section-eyebrow">Democracia descentralizada</p>
-  <h2 class="section-title">SISTEMA DE<br><span>VOTAÇÃO</span></h2>
-  <p class="section-body">
-    A Mulacoin tem um sistema de votação gravado na blockchain — transparente, imutável e auditável por qualquer pessoa. Cada endereço pode votar uma única vez por tema. Sem fraude. Sem intermediário.
-  </p>
-
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:24px; margin-top:48px;">
-    <div style="background:var(--fundo-card); border:1px solid rgba(212,175,55,0.15); border-radius:8px; padding:32px; text-align:center;">
-      <div style="font-size:48px; margin-bottom:12px;">🔒</div>
-      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--creme); margin-bottom:8px;">Imutável</h3>
-      <p style="font-size:14px; color:var(--texto-muted);">Votos gravados permanentemente na blockchain. Impossível alterar ou apagar.</p>
-    </div>
-    <div style="background:var(--fundo-card); border:1px solid rgba(212,175,55,0.15); border-radius:8px; padding:32px; text-align:center;">
-      <div style="font-size:48px; margin-bottom:12px;">🔍</div>
-      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--creme); margin-bottom:8px;">Auditável</h3>
-      <p style="font-size:14px; color:var(--texto-muted);">Qualquer pessoa pode verificar todos os votos diretamente na blockchain.</p>
-    </div>
-    <div style="background:var(--fundo-card); border:1px solid rgba(212,175,55,0.15); border-radius:8px; padding:32px; text-align:center;">
-      <div style="font-size:48px; margin-bottom:12px;">🗳️</div>
-      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--creme); margin-bottom:8px;">1 Voto</h3>
-      <p style="font-size:14px; color:var(--texto-muted);">1 endereço = 1 voto por tema. Votos duplicados são ignorados automaticamente.</p>
-    </div>
-    <div style="background:var(--fundo-card); border:1px solid rgba(212,175,55,0.15); border-radius:8px; padding:32px; text-align:center;">
-      <div style="font-size:48px; margin-bottom:12px;">⚡</div>
-      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--creme); margin-bottom:8px;">Tempo Real</h3>
-      <p style="font-size:14px; color:var(--texto-muted);">Resultados atualizados automaticamente a cada novo bloco minerado.</p>
-    </div>
-  </div>
-
-  <div style="text-align:center; margin-top:48px;">
-    <a href="/vote.html" style="background:linear-gradient(135deg,#D4AF37,#9C7A1E); color:#1A1208; font-family:'Space Mono',monospace; font-weight:700; font-size:14px; letter-spacing:1px; padding:18px 40px; border-radius:4px; text-decoration:none; display:inline-block;">
-      🗳️ ACESSAR VOTAÇÕES
-    </a>
-  </div>
-</section>
-
-<div class="divider"></div>
-
 <!-- SPECS TÉCNICAS -->
 <section id="specs">
   <p class="section-eyebrow">Dados técnicos</p>
@@ -980,6 +947,56 @@
 
 <div class="divider"></div>
 
+<!-- MULACOIN GO -->
+<div class="divider"></div>
+<section id="go">
+  <p class="section-eyebrow">Jogo de Localização com RA</p>
+  <h2 class="section-title">CACE FAZOL<br><span>NO MUNDO REAL</span></h2>
+  <p class="section-body">
+    <strong>Mulacoin GO</strong> é um jogo mobile de realidade aumentada onde você explora sua cidade para capturar itens alimentares e ganhar <strong>FazoL</strong> — criptomoeda real na blockchain Mulacoin. Sem baixar app. Abra <a href="https://go.mulacoin.com.br" target="_blank" style="color:var(--dourado)">go.mulacoin.com.br</a> no celular e comece a caçar.
+  </p>
+  <div class="vote-grid" style="margin-top:40px;">
+    <div class="vote-card">
+      <div class="vote-card-icon">📍</div>
+      <h3>GPS Real</h3>
+      <p>Itens aparecem ao redor de você em tempo real com base na sua localização. Ande pela cidade para encontrá-los.</p>
+    </div>
+    <div class="vote-card">
+      <div class="vote-card-icon">🔥</div>
+      <h3>4 Raridades</h3>
+      <p>De Mortadela Comum à lendária <strong>PICANHA</strong>. Itens mais raros rendem mais FazoL de recompensa.</p>
+    </div>
+    <div class="vote-card">
+      <div class="vote-card-icon">💰</div>
+      <h3>Saques Reais</h3>
+      <p>FazoL ganho no jogo fica na blockchain. Saque para qualquer endereço Mulacoin diretamente da carteira do jogo.</p>
+    </div>
+    <div class="vote-card">
+      <div class="vote-card-icon">🌐</div>
+      <h3>PT / EN</h3>
+      <p>Totalmente bilíngue. Alterne entre Português e Inglês na tela de segurança antes de jogar.</p>
+    </div>
+  </div>
+  <div style="margin-top:40px; display:flex; flex-wrap:wrap; gap:16px; justify-content:center;">
+    <a href="https://go.mulacoin.com.br" class="btn-primary" target="_blank">🎮 Jogar Mulacoin GO</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ECOSSISTEMA -->
+<section style="text-align:center; padding:64px 24px;">
+  <p class="section-eyebrow">Ecossistema</p>
+  <h2 class="section-title" style="margin-bottom:48px;">EXPLORE A<br><span>MULACOIN</span></h2>
+  <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center;">
+    <a href="/vote.html" class="btn-primary">🗳️ Votação</a>
+    <a href="/explorer.html" class="btn-secondary">⛓️ Explorador Blockchain</a>
+    <a href="https://go.mulacoin.com.br" class="btn-primary" target="_blank">🎮 Mulacoin GO</a>
+    <a href="https://github.com/mauricioalldesc-source/mulacoin" class="btn-secondary" target="_blank">💻 GitHub</a>
+    <a href="/en/" class="btn-secondary">🇺🇸 English Version</a>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">🐴 MULACOIN</div>
@@ -989,6 +1006,9 @@
     <a href="#mortadela">Mortadela Paper</a>
     <a href="#minerar">Como Minerar</a>
     <a href="#specs">Specs</a>
+    <a href="/vote.html">Votação</a>
+    <a href="/explorer.html">Explorer</a>
+    <a href="https://go.mulacoin.com.br" target="_blank">GO Game</a>
   </div>
   <p>
     <strong style="color: var(--dourado)">seed.mulacoin.com.br</strong> — Node oficial da rede Mulacoin
